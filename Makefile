@@ -1,19 +1,21 @@
 CC ?= cc
 # Minimal Makefile: only build and run the unit test binary.
-CFLAGS ?= -O2 -Iinclude -Wall -Wextra -Wpedantic -Wconversion -Wshadow \
+CFLAGS ?= -O2 -Iinclude -Iexternal/EmbeddedSpacePacket/include -Wall -Wextra -Wpedantic -Wconversion -Wshadow \
 		  -Wcast-align -Wcast-qual -Wpointer-arith -Wformat=2 \
 		  -Wmissing-prototypes -Wstrict-prototypes -Wredundant-decls -Wundef \
 		  -std=c11
 BUILD_DIR = build
 CTEST_PATH = $(BUILD_DIR)/tests/ctest
+SRC_FILES = src/pus.c external/EmbeddedSpacePacket/src/space_packet.c
+TEST_FILES = tests/unit_tests.c tests/test_pus_frame.c
 
 all: ctest
 
 ctest: $(CTEST_PATH)
 
-$(CTEST_PATH): tests/unit_tests.c
+$(CTEST_PATH): $(TEST_FILES) $(SRC_FILES)
 	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -Iinclude tests/unit_tests.c -o $(CTEST_PATH)
+	$(CC) $(CFLAGS) $(TEST_FILES) $(SRC_FILES) -o $(CTEST_PATH)
 
 run: ctest
 	$(CTEST_PATH)
