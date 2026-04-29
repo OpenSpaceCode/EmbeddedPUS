@@ -9,4 +9,8 @@
 #define PUS_ENABLE_SPACE_PACKET_ADAPTER 0u
 #endif
 
+#ifndef PUS_MAX_TC_HANDLERS
+#define PUS_MAX_TC_HANDLERS 16u
+#endif
+
 #endif /* PUS_CONFIG_H */

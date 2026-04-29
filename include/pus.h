@@ -10,6 +10,8 @@
 #include "pus_services.h"
 #include "pus_types.h"
 #include "pus_codec.h"
+#include "pus_context.h"
+#include "pus_handler.h"
 
 typedef struct
 {

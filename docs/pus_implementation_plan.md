@@ -82,7 +82,7 @@ include/
   pus_types.h           core types, TC/TM headers, enums
   pus_config.h          compile-time limits and feature flags
   pus_codec.h           byte-level TC/TM header encode/decode
-  pus_router.h          TC handler registry
+  pus_handler.h         TC handler registry
   pus_tc.h              TC processing API
   pus_tm.h              TM generation API
   pus_services.h        service and subtype constants
@@ -90,7 +90,7 @@ include/
 src/
   pus.c                 context init and common logic
   pus_codec.c           explicit wire packing and unpacking
-  pus_router.c          service/subtype dispatch
+  pus_handler.c         service/subtype dispatch
   pus_tc.c              TC validation and processing flow
   pus_tm.c              TM construction and counters
   pus_service_1.c       request verification
@@ -249,7 +249,7 @@ Responsibilities:
 ### 7.5 TC Router
 
 ```c
-pus_status_t pus_router_register(
+pus_status_t pus_handler_register(
 	pus_context_t *ctx,
 	pus_service_t service,
 	pus_subtype_t subtype,
@@ -258,7 +258,7 @@ pus_status_t pus_router_register(
 );
 ```
 
-The router shall use a fixed-size handler table configured by
+The handler registry shall use a fixed-size handler table configured by
 `PUS_MAX_TC_HANDLERS`.
 
 ## 8. TC Processing Logic
@@ -405,9 +405,9 @@ The adapter shall:
 
 - Implement `pus_context_t`.
 - Implement `pus_init()`.
-- Implement fixed-size route table.
-- Implement `pus_router_register()`.
-- Implement internal route lookup.
+- Implement fixed-size handler table.
+- Implement `pus_handler_register()`.
+- Implement internal handler lookup.
 
 ### Phase 4 - TC Processing
 
@@ -477,8 +477,8 @@ Add unit tests for:
 - invalid pointers,
 - invalid PUS version,
 - buffer too small,
-- route registration,
-- route dispatch,
+- handler registration,
+- handler dispatch,
 - no-handler behavior,
 - Service 1 verification reports,
 - Service 17 ping flow,

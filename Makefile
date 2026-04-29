@@ -6,8 +6,8 @@ CFLAGS ?= -O2 -Iinclude -Iexternal/EmbeddedSpacePacket/include -Wall -Wextra -Wp
 		  -std=c11
 BUILD_DIR = build
 CTEST_PATH = $(BUILD_DIR)/tests/ctest
-SRC_FILES = src/pus.c src/pus_codec.c
-TEST_FILES = tests/unit_tests.c tests/test_pus_types.c tests/test_pus_codec.c
+SRC_FILES = src/pus.c src/pus_codec.c src/pus_context.c src/pus_handler.c
+TEST_FILES = tests/unit_tests.c tests/test_pus_types.c tests/test_pus_codec.c tests/test_pus_handler.c
 
 all: ctest
 
