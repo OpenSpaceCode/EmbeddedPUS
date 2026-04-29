@@ -1,7 +1,12 @@
 #ifndef PUS_CONFIG_H
 #define PUS_CONFIG_H
 
+#ifndef PUS_VERSION
+#define PUS_VERSION 1u
+#endif
 
-#define PUS_VERSION 1
+#ifndef PUS_ENABLE_SPACE_PACKET_ADAPTER
+#define PUS_ENABLE_SPACE_PACKET_ADAPTER 0u
+#endif
 
 #endif /* PUS_CONFIG_H */
