@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
-static int cunit_overall_failures = 0;
+extern int cunit_overall_failures;
 
 #define ASSERT_EQ_INT(expected, actual)                                        \
   do {                                                                         \

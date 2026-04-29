@@ -9,6 +9,7 @@
 #include "pus_config.h"
 #include "pus_services.h"
 #include "pus_types.h"
+#include "pus_codec.h"
 
 typedef struct
 {

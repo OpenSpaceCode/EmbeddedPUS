@@ -1,15 +1,23 @@
 #include "cunit.h"
 #include <stdio.h>
 
-extern int test_pus_frame_run_all(void);
+int cunit_overall_failures = 0;
 
-int main(void) {
-	test_pus_frame_run_all();
+extern int test_pus_types_run_all(void);
+extern int test_pus_codec_run_all(void);
 
-	if (cunit_overall_failures == 0) {
+int main(void)
+{
+	test_pus_types_run_all();
+	test_pus_codec_run_all();
+
+	if (cunit_overall_failures == 0)
+	{
 		printf("ALL TESTS PASSED\n");
 		return 0;
-	} else {
+	}
+	else
+	{
 		printf("%d TEST(S) FAILED\n", cunit_overall_failures);
 		return 1;
 	}
