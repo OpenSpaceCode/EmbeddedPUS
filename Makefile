@@ -1,6 +1,6 @@
 CC ?= cc
 # Minimal Makefile: only build and run the unit test binary.
-CFLAGS ?= -O2 -Iinclude -Iexternal/EmbeddedSpacePacket/include -Wall -Wextra -Wpedantic -Wconversion -Wshadow \
+CFLAGS ?= -O2 -Iinclude -Wall -Wextra -Wpedantic -Wconversion -Wshadow \
 		  -Wcast-align -Wcast-qual -Wpointer-arith -Wformat=2 \
 		  -Wmissing-prototypes -Wstrict-prototypes -Wredundant-decls -Wundef \
 		  -std=c11

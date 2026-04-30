@@ -1,3 +1,0 @@
-[submodule "external/EmbeddedSpacePacket"]
-	path = external/EmbeddedSpacePacket
-	url = git@github.com:OpenSpaceCode/EmbeddedSpacePacket.git

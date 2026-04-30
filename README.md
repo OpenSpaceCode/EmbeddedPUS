@@ -17,7 +17,7 @@ Minimal ECSS Packet Utilisation Standard (PUS) protocol implementation in C for 
 ## Project Structure
 
 ```
-EmbeddedSpacePacket/
+EmbeddedPUS/
 ├── include/
 │   └── 
 ├── src/
