@@ -78,3 +78,16 @@ pus_status_t pus_handler_register(
 
 	return PUS_STATUS_OK;
 }
+
+int pus_handler_find(
+	const pus_context_t *ctx,
+	pus_service_t service,
+	pus_subtype_t subtype)
+{
+	if (!ctx)
+	{
+		return -1;
+	}
+
+	return pus_handler_find_index(ctx, service, subtype);
+}

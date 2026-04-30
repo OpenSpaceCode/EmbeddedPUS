@@ -13,6 +13,42 @@
 #include "pus_context.h"
 #include "pus_handler.h"
 
+/**
+ * Decode a raw TC packet from a byte buffer.
+ *
+ * Validates the buffer length, decodes the TC secondary header,
+ * and exposes the payload pointer and length.
+ *
+ * @param data      Pointer to the raw TC packet bytes
+ * @param len       Length of the data buffer
+ * @param tc        Output structure to fill with decoded TC packet
+ * @return          PUS_STATUS_OK on success, error code on failure
+ */
+pus_status_t pus_tc_decode(
+	const uint8_t *data,
+	uint16_t len,
+	pus_tc_packet_t *tc);
+
+/**
+ * Process an incoming TC packet.
+ *
+ * This function:
+ * 1. Decodes the TC secondary header
+ * 2. Validates PUS version and service type
+ * 3. Emits Service 1 verification telemetry based on ACK flags
+ * 4. Routes the TC to the registered handler
+ * 5. Emits completion verification telemetry
+ *
+ * @param ctx       PUS context with handler registry
+ * @param data      Pointer to the raw TC packet bytes
+ * @param len       Length of the data buffer
+ * @return          PUS_STATUS_OK on success, error code on failure
+ */
+pus_status_t pus_tc_process(
+	pus_context_t *ctx,
+	const uint8_t *data,
+	uint16_t len);
+
 typedef struct
 {
 	uint8_t *payload;
