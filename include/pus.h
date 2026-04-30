@@ -49,6 +49,52 @@ pus_status_t pus_tc_process(
 	const uint8_t *data,
 	uint16_t len);
 
+/**
+ * Build a TM packet.
+ *
+ * This function:
+ * 1. Validates arguments and output buffer capacity
+ * 2. Fills a TM secondary header with service/subtype/destination
+ * 3. Increments the message counter
+ * 4. Encodes the TM secondary header
+ * 5. Appends the payload
+ * 6. Optionally passes result to TM sink callback
+ *
+ * @param ctx           PUS context with counter and sink
+ * @param service       PUS service type for TM
+ * @param subtype       PUS subtype for TM
+ * @param destination_id Destination ID for TM
+ * @param payload       Pointer to payload data (can be NULL if payload_len is 0)
+ * @param payload_len   Length of payload data
+ * @param out           Output buffer for encoded TM packet
+ * @param out_capacity  Capacity of output buffer
+ * @param out_len       Output: actual length of encoded TM packet
+ * @return              PUS_STATUS_OK on success, error code on failure
+ */
+pus_status_t pus_tm_build(
+	pus_context_t *ctx,
+	pus_service_t service,
+	pus_subtype_t subtype,
+	uint16_t destination_id,
+	const uint8_t *payload,
+	uint16_t payload_len,
+	uint8_t *out,
+	uint16_t out_capacity,
+	uint16_t *out_len);
+
+/**
+ * Set the TM sink callback.
+ *
+ * @param ctx           PUS context
+ * @param sink          TM sink callback function
+ * @param user_data     User data passed to sink callback
+ * @return              PUS_STATUS_OK on success, error code on failure
+ */
+pus_status_t pus_set_tm_sink(
+	pus_context_t *ctx,
+	pus_tm_sink_t sink,
+	void *user_data);
+
 typedef struct
 {
 	uint8_t *payload;

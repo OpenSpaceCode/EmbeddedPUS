@@ -7,6 +7,11 @@ static int pus_handler_find_index(
 {
 	uint16_t i = 0u;
 
+	if (!ctx)
+	{
+		return -1;
+	}
+
 	for (i = 0u; i < PUS_MAX_TC_HANDLERS; i++)
 	{
 		if (!ctx->handler_table[i].is_used)
@@ -29,6 +34,11 @@ static int pus_handler_find_index(
 static int pus_handler_find_free_index(const pus_context_t *ctx)
 {
 	uint16_t i = 0u;
+
+	if (!ctx)
+	{
+		return -1;
+	}
 
 	for (i = 0u; i < PUS_MAX_TC_HANDLERS; i++)
 	{

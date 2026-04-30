@@ -280,7 +280,200 @@ static int test_pus_handler_find_returns_index(void)
 
 	return 0;
 }
+/* TM Build tests */
 
+static int test_pus_tm_build_rejects_null(void)
+{
+	pus_context_t ctx;
+	uint8_t out[64];
+	uint16_t out_len = 0u;
+
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_init(&ctx));
+
+	/* Null context */
+	ASSERT_EQ_INT(PUS_STATUS_NULL, pus_tm_build(
+									   NULL, PUS_SERVICE_TEST, PUS_SUBTYPE_TEST_ARE_YOU_ALIVE_REPORT,
+									   1u, (const uint8_t *)"test", 4u, out, sizeof(out), &out_len));
+
+	/* Null output buffer */
+	ASSERT_EQ_INT(PUS_STATUS_NULL, pus_tm_build(
+									   &ctx, PUS_SERVICE_TEST, PUS_SUBTYPE_TEST_ARE_YOU_ALIVE_REPORT,
+									   1u, (const uint8_t *)"test", 4u, NULL, sizeof(out), &out_len));
+
+	/* Null output length */
+	ASSERT_EQ_INT(PUS_STATUS_NULL, pus_tm_build(
+									   &ctx, PUS_SERVICE_TEST, PUS_SUBTYPE_TEST_ARE_YOU_ALIVE_REPORT,
+									   1u, (const uint8_t *)"test", 4u, out, sizeof(out), NULL));
+
+	return 0;
+}
+
+static int test_pus_tm_build_rejects_small_buffer(void)
+{
+	pus_context_t ctx;
+	uint8_t out[8]; /* Too small for TM header + payload */
+	uint16_t out_len = 0u;
+
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_init(&ctx));
+
+	/* Buffer too small for TM secondary header */
+	ASSERT_EQ_INT(PUS_STATUS_BUFFER_TOO_SMALL, pus_tm_build(
+												   &ctx, PUS_SERVICE_TEST, PUS_SUBTYPE_TEST_ARE_YOU_ALIVE_REPORT,
+												   1u, (const uint8_t *)"test", 4u, out, 8u, &out_len));
+
+	return 0;
+}
+
+static int test_pus_tm_build_succeeds(void)
+{
+	pus_context_t ctx;
+	uint8_t out[64];
+	uint16_t out_len = 0u;
+
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_init(&ctx));
+
+	/* Build TM with payload */
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_tm_build(
+									 &ctx, PUS_SERVICE_TEST, PUS_SUBTYPE_TEST_ARE_YOU_ALIVE_REPORT,
+									 1u, (const uint8_t *)"test", 4u, out, sizeof(out), &out_len));
+
+	/* Expected: 12 byte header + 4 byte payload = 16 bytes */
+	ASSERT_EQ_INT(16u, out_len);
+
+	return 0;
+}
+
+static int test_pus_tm_build_encodes_correct_header(void)
+{
+	pus_context_t ctx;
+	uint8_t out[64];
+	uint16_t out_len = 0u;
+
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_init(&ctx));
+
+	/* Build TM[17,2] */
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_tm_build(
+									 &ctx, PUS_SERVICE_TEST, PUS_SUBTYPE_TEST_ARE_YOU_ALIVE_REPORT,
+									 0x1234u, (const uint8_t *)"AB", 2u, out, sizeof(out), &out_len));
+
+	/* Check header fields */
+	/* Byte 0: version=1 (0x10), time_ref_status=0 */
+	ASSERT_EQ_INT(0x10u, out[0] & 0xf0u);
+	/* Byte 1: service type = 17 */
+	ASSERT_EQ_INT(17u, out[1]);
+	/* Byte 2: subtype = 2 */
+	ASSERT_EQ_INT(2u, out[2]);
+	/* Bytes 3-4: counter = 0 */
+	ASSERT_EQ_INT(0u, out[3]);
+	ASSERT_EQ_INT(0u, out[4]);
+	/* Bytes 5-6: destination = 0x1234 */
+	ASSERT_EQ_INT(0x12u, out[5]);
+	ASSERT_EQ_INT(0x34u, out[6]);
+	/* Bytes 7-10: time = 0 */
+	ASSERT_EQ_INT(0u, out[7]);
+	ASSERT_EQ_INT(0u, out[8]);
+	ASSERT_EQ_INT(0u, out[9]);
+	ASSERT_EQ_INT(0u, out[10]);
+	/* Byte 11: spare = 0 */
+	ASSERT_EQ_INT(0u, out[11]);
+	/* Bytes 12-13: payload "AB" */
+	ASSERT_EQ_INT('A', out[12]);
+	ASSERT_EQ_INT('B', out[13]);
+
+	return 0;
+}
+
+static int test_pus_tm_build_increments_counter(void)
+{
+	pus_context_t ctx;
+	uint8_t out[64];
+	uint16_t out_len = 0u;
+
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_init(&ctx));
+
+	/* First TM */
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_tm_build(
+									 &ctx, PUS_SERVICE_TEST, PUS_SUBTYPE_TEST_ARE_YOU_ALIVE_REPORT,
+									 1u, NULL, 0u, out, sizeof(out), &out_len));
+	/* Counter should be 0 in first packet */
+	ASSERT_EQ_INT(0u, out[3]);
+	ASSERT_EQ_INT(0u, out[4]);
+
+	/* Second TM */
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_tm_build(
+									 &ctx, PUS_SERVICE_TEST, PUS_SUBTYPE_TEST_ARE_YOU_ALIVE_REPORT,
+									 1u, NULL, 0u, out, sizeof(out), &out_len));
+	/* Counter should be 1 in second packet */
+	ASSERT_EQ_INT(0u, out[3]);
+	ASSERT_EQ_INT(1u, out[4]);
+
+	/* Third TM */
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_tm_build(
+									 &ctx, PUS_SERVICE_TEST, PUS_SUBTYPE_TEST_ARE_YOU_ALIVE_REPORT,
+									 1u, NULL, 0u, out, sizeof(out), &out_len));
+	/* Counter should be 2 in third packet */
+	ASSERT_EQ_INT(0u, out[3]);
+	ASSERT_EQ_INT(2u, out[4]);
+
+	return 0;
+}
+
+static int test_pus_set_tm_sink_rejects_null(void)
+{
+	pus_context_t ctx;
+
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_init(&ctx));
+	ASSERT_EQ_INT(PUS_STATUS_NULL, pus_set_tm_sink(NULL, NULL, NULL));
+
+	return 0;
+}
+
+/* Helper sink function for testing - defined before tests that use it */
+static pus_status_t test_sink(
+	void *user_data,
+	const uint8_t *data,
+	uint16_t len)
+{
+	(void)user_data;
+	(void)data;
+	(void)len;
+	return PUS_STATUS_OK;
+}
+
+static int test_pus_set_tm_sink_succeeds(void)
+{
+	pus_context_t ctx;
+	static pus_status_t sink_called = PUS_STATUS_OK;
+
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_init(&ctx));
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_set_tm_sink(&ctx, test_sink, &sink_called));
+	ASSERT_TRUE(ctx.tm_sink == test_sink);
+	ASSERT_TRUE(ctx.tm_sink_user_data == &sink_called);
+
+	return 0;
+}
+
+static int test_pus_init_with_config_succeeds(void)
+{
+	pus_context_t ctx;
+	pus_config_t config;
+
+	memset(&config, 0, sizeof(config));
+	config.default_source_id = 0x1234u;
+	config.default_destination_id = 0x5678u;
+
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_init_with_config(&ctx, &config));
+	ASSERT_EQ_INT(0x1234u, ctx.default_source_id);
+	ASSERT_EQ_INT(0x5678u, ctx.default_destination_id);
+
+	/* Test with NULL config (should use defaults) */
+	memset(&ctx, 0xff, sizeof(ctx));
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_init_with_config(&ctx, NULL));
+	ASSERT_EQ_INT(0u, ctx.default_source_id);
+	ASSERT_EQ_INT(0u, ctx.default_destination_id);
+
+	return 0;
+}
 int test_pus_handler_run_all(void)
 {
 	RUN_TEST(test_pus_init_rejects_null);
@@ -300,6 +493,16 @@ int test_pus_handler_run_all(void)
 	RUN_TEST(test_pus_tc_process_handler_failure);
 	RUN_TEST(test_pus_tc_process_unknown_service);
 	RUN_TEST(test_pus_handler_find_returns_index);
+
+	/* TM Build tests */
+	RUN_TEST(test_pus_tm_build_rejects_null);
+	RUN_TEST(test_pus_tm_build_rejects_small_buffer);
+	RUN_TEST(test_pus_tm_build_succeeds);
+	RUN_TEST(test_pus_tm_build_encodes_correct_header);
+	RUN_TEST(test_pus_tm_build_increments_counter);
+	RUN_TEST(test_pus_set_tm_sink_rejects_null);
+	RUN_TEST(test_pus_set_tm_sink_succeeds);
+	RUN_TEST(test_pus_init_with_config_succeeds);
 
 	return 0;
 }

@@ -104,6 +104,91 @@ pus_status_t pus_tc_process(
 	return status;
 }
 
+pus_status_t pus_tm_build(
+	pus_context_t *ctx,
+	pus_service_t service,
+	pus_subtype_t subtype,
+	uint16_t destination_id,
+	const uint8_t *payload,
+	uint16_t payload_len,
+	uint8_t *out,
+	uint16_t out_capacity,
+	uint16_t *out_len)
+{
+	pus_status_t status = PUS_STATUS_OK;
+	pus_tm_sec_header_t sec_header;
+	uint16_t encoded_len = 0u;
+	uint16_t total_len = 0u;
+
+	/* Validate required pointers */
+	if (!ctx || !out || !out_len)
+	{
+		return PUS_STATUS_NULL;
+	}
+
+	/* Calculate total required length */
+	total_len = PUS_TM_SEC_HEADER_LEN + payload_len;
+
+	/* Validate output buffer capacity */
+	if (out_capacity < total_len)
+	{
+		return PUS_STATUS_BUFFER_TOO_SMALL;
+	}
+
+	/* Build TM secondary header */
+	sec_header.version = PUS_VERSION;
+	sec_header.time_ref_status = 0u;
+	sec_header.service_type_id = service;
+	sec_header.subtype_id = subtype;
+	sec_header.msg_type_counter = ctx->tm_counter;
+	sec_header.destination_id = destination_id;
+	sec_header.time = 0u; /* TODO: Add time source */
+	sec_header.spare = 0u;
+
+	/* Encode the TM secondary header */
+	status = pus_tm_sec_header_encode(&sec_header, out, out_capacity, &encoded_len);
+	if (status != PUS_STATUS_OK)
+	{
+		return status;
+	}
+
+	/* Copy payload after the secondary header */
+	if (payload && payload_len > 0)
+	{
+		memcpy(&out[encoded_len], payload, payload_len);
+	}
+
+	/* Increment message counter */
+	ctx->tm_counter++;
+
+	/* Set output length */
+	*out_len = total_len;
+
+	/* If TM sink is configured, send the TM packet */
+	if (ctx->tm_sink)
+	{
+		status = ctx->tm_sink(ctx->tm_sink_user_data, out, total_len);
+	}
+
+	return status;
+}
+
+pus_status_t pus_set_tm_sink(
+	pus_context_t *ctx,
+	pus_tm_sink_t sink,
+	void *user_data)
+{
+	if (!ctx)
+	{
+		return PUS_STATUS_NULL;
+	}
+
+	ctx->tm_sink = sink;
+	ctx->tm_sink_user_data = user_data;
+
+	return PUS_STATUS_OK;
+}
+
 #if PUS_ENABLE_SPACE_PACKET_ADAPTER
 int pus_from_space_packet(const sp_packet_t *sp, pus_frame_t *pus)
 {
