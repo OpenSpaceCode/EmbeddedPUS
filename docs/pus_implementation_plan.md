@@ -345,8 +345,6 @@ Reports implemented:
 - `TM[1,2]` acceptance failure (ACK-conditioned)
 - `TM[1,3]` start success (ACK-conditioned)
 - `TM[1,4]` start failure (ACK-conditioned)
-- `TM[1,5]` progress success (ACK-conditioned)
-- `TM[1,6]` progress failure (ACK-conditioned)
 - `TM[1,7]` completion success (ACK-conditioned)
 - `TM[1,8]` completion failure (ACK-conditioned)
 - `TM[1,10]` routing failure (always emitted)

@@ -6,8 +6,6 @@
 - TM[1,2] failed acceptance verification report
 - TM[1,3] successful start of execution verification report
 - TM[1,4] failed start of execution verification report
-- TM[1,5] successful progress of execution verification report
-- TM[1,6] failed progress of execution verification report
 - TM[1,7] successful completion of execution verification report
 - TM[1,8] failed completion of execution verification report
 - TM[1,10] failed routing verification report
