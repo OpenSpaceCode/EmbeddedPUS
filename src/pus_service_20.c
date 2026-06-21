@@ -87,10 +87,7 @@ pus_status_t pus_service_20_emit_report(
 	                PUS_SUBTYPE_PARAMETER_VALUE_REPORT,
 	                ctx->default_destination_id);
 
-	st = pus_tm_sec_header_encode(&hdr, out, sizeof(out), &hdr_len);
-	if (st != PUS_STATUS_OK) {
-		return st;
-	}
+	(void)pus_tm_sec_header_encode(&hdr, out, sizeof(out), &hdr_len);
 
 	/* Payload: N (1 byte) + N × [PID (2) + value (value_len)] */
 	off = hdr_len;

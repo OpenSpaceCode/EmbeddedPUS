@@ -139,6 +139,17 @@ static int test_handler_17_3_bad_length(void)
 	return 0;
 }
 
+static int test_null_ctx(void)
+{
+	ASSERT_EQ_INT(PUS_STATUS_NULL,
+		pus_service_17_emit_alive_report(NULL, 0u));
+	ASSERT_EQ_INT(PUS_STATUS_NULL,
+		pus_service_17_emit_connection_report(NULL, 0u, 0u));
+	ASSERT_EQ_INT(PUS_STATUS_NULL,
+		pus_service_17_register_handlers(NULL));
+	return 0;
+}
+
 pus_test_result_t test_pus_service_17_run_all(void)
 {
 	RUN_TEST(test_emit_alive_report);
@@ -146,5 +157,6 @@ pus_test_result_t test_pus_service_17_run_all(void)
 	RUN_TEST(test_handler_17_1_responds);
 	RUN_TEST(test_handler_17_3_echoes_apid);
 	RUN_TEST(test_handler_17_3_bad_length);
+	RUN_TEST(test_null_ctx);
 	return (pus_test_result_t){ cunit_total_tests - cunit_overall_failures, cunit_total_tests };
 }

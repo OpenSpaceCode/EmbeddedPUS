@@ -138,6 +138,45 @@ static int test_emit_no_sink_ok(void)
 	return 0;
 }
 
+static int test_build_null_args(void)
+{
+	pus_context_t   ctx;
+	pus_tc_packet_t tc;
+	uint8_t         out[32];
+	uint16_t        len;
+	pus_init(&ctx);
+	memset(&tc, 0, sizeof(tc));
+	ASSERT_EQ_INT(PUS_STATUS_NULL,
+		pus_service_1_build_success(NULL, &tc,
+			PUS_SUBTYPE_VERIFICATION_ACCEPTANCE_SUCCESS, out, sizeof(out), &len));
+	return 0;
+}
+
+static int test_build_buffer_too_small(void)
+{
+	pus_context_t   ctx;
+	pus_tc_packet_t tc = make_tc(17u, 1u, 0u);
+	uint8_t         out[4];
+	uint16_t        len;
+	pus_init(&ctx);
+	ASSERT_EQ_INT(PUS_STATUS_BUFFER_TOO_SMALL,
+		pus_service_1_build_success(&ctx, &tc,
+			PUS_SUBTYPE_VERIFICATION_ACCEPTANCE_SUCCESS, out, sizeof(out), &len));
+	return 0;
+}
+
+static int test_emit_null_ctx(void)
+{
+	pus_tc_packet_t tc = make_tc(1u, 1u, 0u);
+	ASSERT_EQ_INT(PUS_STATUS_NULL,
+		pus_service_1_emit_success(NULL, &tc,
+			PUS_SUBTYPE_VERIFICATION_ACCEPTANCE_SUCCESS));
+	ASSERT_EQ_INT(PUS_STATUS_NULL,
+		pus_service_1_emit_failure(NULL, &tc,
+			PUS_SUBTYPE_VERIFICATION_ROUTING_FAILURE, 0u));
+	return 0;
+}
+
 pus_test_result_t test_pus_service_1_run_all(void)
 {
 	RUN_TEST(test_build_success_payload);
@@ -145,5 +184,8 @@ pus_test_result_t test_pus_service_1_run_all(void)
 	RUN_TEST(test_emit_success_calls_sink);
 	RUN_TEST(test_emit_failure_calls_sink);
 	RUN_TEST(test_emit_no_sink_ok);
+	RUN_TEST(test_build_null_args);
+	RUN_TEST(test_build_buffer_too_small);
+	RUN_TEST(test_emit_null_ctx);
 	return (pus_test_result_t){ cunit_total_tests - cunit_overall_failures, cunit_total_tests };
 }

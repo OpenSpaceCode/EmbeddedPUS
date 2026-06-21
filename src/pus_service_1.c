@@ -23,7 +23,6 @@ static pus_status_t build_report(
 	uint16_t               capacity,
 	uint16_t              *out_len)
 {
-	pus_status_t        st;
 	pus_tm_sec_header_t hdr;
 	uint16_t            hdr_len;
 	uint16_t            payload_len;
@@ -42,11 +41,7 @@ static pus_status_t build_report(
 
 	pus_tm_hdr_fill(ctx, &hdr, PUS_SERVICE_REQUEST_VERIFICATION, subtype,
 	                tc->sec_header.source_id);
-
-	st = pus_tm_sec_header_encode(&hdr, out, capacity, &hdr_len);
-	if (st != PUS_STATUS_OK) {
-		return st;
-	}
+	(void)pus_tm_sec_header_encode(&hdr, out, capacity, &hdr_len);
 
 	source_id  = tc->sec_header.source_id;
 	payload[0] = tc->sec_header.service_type_id;

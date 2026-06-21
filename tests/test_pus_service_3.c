@@ -139,6 +139,101 @@ static int test_update_existing(void)
 	return 0;
 }
 
+static uint32_t test_time_source(void *ud) { (void)ud; return 0xABCD1234u; }
+
+static pus_status_t failing_provider(uint16_t sid, uint8_t *buf,
+                                      uint16_t cap, uint16_t *out_len, void *ud)
+{
+	(void)sid; (void)buf; (void)cap; (void)out_len; (void)ud;
+	return PUS_STATUS_HANDLER_FAILED;
+}
+
+static pus_status_t overflow_provider(uint16_t sid, uint8_t *buf,
+                                       uint16_t cap, uint16_t *out_len, void *ud)
+{
+	(void)sid; (void)buf; (void)ud;
+	*out_len = (uint16_t)(cap + 1u);
+	return PUS_STATUS_OK;
+}
+
+static int test_register_null_s3(void)
+{
+	ASSERT_EQ_INT(PUS_STATUS_NULL,
+		pus_service_3_register_hk(NULL, 0x0001u, simple_provider, NULL));
+	return 0;
+}
+
+static int test_register_null_provider(void)
+{
+	pus_service_3_ctx_t s3;
+	pus_service_3_init(&s3);
+	ASSERT_EQ_INT(PUS_STATUS_NULL,
+		pus_service_3_register_hk(&s3, 0x0001u, NULL, NULL));
+	return 0;
+}
+
+static int test_emit_null_ctx(void)
+{
+	pus_service_3_ctx_t s3;
+	pus_service_3_init(&s3);
+	ASSERT_EQ_INT(PUS_STATUS_NULL, pus_service_3_emit_hk(NULL, &s3, 0x0001u));
+	return 0;
+}
+
+static int test_emit_null_s3(void)
+{
+	pus_context_t ctx = make_ctx();
+	ASSERT_EQ_INT(PUS_STATUS_NULL, pus_service_3_emit_hk(&ctx, NULL, 0x0001u));
+	return 0;
+}
+
+static int test_provider_failure(void)
+{
+	pus_context_t ctx = make_ctx();
+	pus_service_3_ctx_t s3;
+	pus_service_3_init(&s3);
+	pus_service_3_register_hk(&s3, 0x0001u, failing_provider, NULL);
+	ASSERT_EQ_INT(PUS_STATUS_HANDLER_FAILED,
+		pus_service_3_emit_hk(&ctx, &s3, 0x0001u));
+	return 0;
+}
+
+static int test_provider_data_overflow(void)
+{
+	pus_context_t ctx = make_ctx();
+	pus_service_3_ctx_t s3;
+	pus_service_3_init(&s3);
+	pus_service_3_register_hk(&s3, 0x0001u, overflow_provider, NULL);
+	ASSERT_EQ_INT(PUS_STATUS_BAD_LENGTH,
+		pus_service_3_emit_hk(&ctx, &s3, 0x0001u));
+	return 0;
+}
+
+static int test_emit_no_sink(void)
+{
+	pus_context_t ctx;
+	pus_init(&ctx); /* no sink */
+	pus_service_3_ctx_t s3;
+	pus_service_3_init(&s3);
+	pus_service_3_register_hk(&s3, 0x0001u, simple_provider, NULL);
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_service_3_emit_hk(&ctx, &s3, 0x0001u));
+	return 0;
+}
+
+static int test_emit_with_time_source(void)
+{
+	pus_context_t ctx = make_ctx();
+	ctx.time_source = test_time_source;
+	pus_service_3_ctx_t s3;
+	pus_service_3_init(&s3);
+	pus_service_3_register_hk(&s3, 0x0001u, simple_provider, NULL);
+	g_len = 0;
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_service_3_emit_hk(&ctx, &s3, 0x0001u));
+	ASSERT_EQ_INT(0xAB, g_buf[7]);
+	ASSERT_EQ_INT(0xCD, g_buf[8]);
+	return 0;
+}
+
 pus_test_result_t test_pus_service_3_run_all(void)
 {
 	RUN_TEST(test_init_zeroes);
@@ -147,5 +242,13 @@ pus_test_result_t test_pus_service_3_run_all(void)
 	RUN_TEST(test_unknown_sid_returns_no_handler);
 	RUN_TEST(test_table_full);
 	RUN_TEST(test_update_existing);
+	RUN_TEST(test_register_null_s3);
+	RUN_TEST(test_register_null_provider);
+	RUN_TEST(test_emit_null_ctx);
+	RUN_TEST(test_emit_null_s3);
+	RUN_TEST(test_provider_failure);
+	RUN_TEST(test_provider_data_overflow);
+	RUN_TEST(test_emit_no_sink);
+	RUN_TEST(test_emit_with_time_source);
 	return (pus_test_result_t){ cunit_total_tests - cunit_overall_failures, cunit_total_tests };
 }

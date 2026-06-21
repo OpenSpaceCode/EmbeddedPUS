@@ -86,10 +86,7 @@ static pus_status_t emit_report(
 	pus_tm_hdr_fill(ctx, &hdr, PUS_SERVICE_HOUSEKEEPING, subtype,
 	                ctx->default_destination_id);
 
-	st = pus_tm_sec_header_encode(&hdr, out, sizeof(out), &hdr_len);
-	if (st != PUS_STATUS_OK) {
-		return st;
-	}
+	(void)pus_tm_sec_header_encode(&hdr, out, sizeof(out), &hdr_len);
 
 	out[hdr_len]      = (uint8_t)(sid >> 8u);
 	out[hdr_len + 1u] = (uint8_t)(sid & 0xFFu);

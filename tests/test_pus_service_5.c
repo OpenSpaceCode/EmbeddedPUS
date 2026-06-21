@@ -111,6 +111,47 @@ static int test_all_subtypes_produce_correct_service(void)
 	return 0;
 }
 
+static uint32_t test_time_source(void *ud) { (void)ud; return 0xDEADBEEFu; }
+
+static int test_null_ctx(void)
+{
+	ASSERT_EQ_INT(PUS_STATUS_NULL,
+		pus_service_5_emit(NULL, PUS_SUBTYPE_EVENT_INFO, 0x0001u, NULL, 0u));
+	return 0;
+}
+
+static int test_null_aux_data_with_len(void)
+{
+	pus_context_t ctx = make_ctx();
+	/* aux_len > 0 but aux_data == NULL → PUS_STATUS_NULL */
+	ASSERT_EQ_INT(PUS_STATUS_NULL,
+		pus_service_5_emit(&ctx, PUS_SUBTYPE_EVENT_INFO, 0x0001u, NULL, 1u));
+	return 0;
+}
+
+static int test_aux_overflow(void)
+{
+	pus_context_t ctx = make_ctx();
+	const uint8_t dummy = 0u;
+	ASSERT_EQ_INT(PUS_STATUS_BUFFER_TOO_SMALL,
+		pus_service_5_emit(&ctx, PUS_SUBTYPE_EVENT_INFO, 0x0001u, &dummy,
+		                   (uint16_t)(PUS_MAX_TM_PAYLOAD_LEN + 1u)));
+	return 0;
+}
+
+static int test_emit_with_time_source(void)
+{
+	pus_context_t ctx = make_ctx();
+	ctx.time_source = test_time_source;
+	g_len = 0;
+	ASSERT_EQ_INT(PUS_STATUS_OK,
+		pus_service_5_emit(&ctx, PUS_SUBTYPE_EVENT_INFO, 0x0001u, NULL, 0u));
+	/* time at bytes [7-10] in TM header */
+	ASSERT_EQ_INT(0xDE, g_buf[7]);
+	ASSERT_EQ_INT(0xAD, g_buf[8]);
+	return 0;
+}
+
 pus_test_result_t test_pus_service_5_run_all(void)
 {
 	RUN_TEST(test_emit_info);
@@ -118,5 +159,9 @@ pus_test_result_t test_pus_service_5_run_all(void)
 	RUN_TEST(test_emit_with_aux_data);
 	RUN_TEST(test_emit_no_sink_ok);
 	RUN_TEST(test_all_subtypes_produce_correct_service);
+	RUN_TEST(test_null_ctx);
+	RUN_TEST(test_null_aux_data_with_len);
+	RUN_TEST(test_aux_overflow);
+	RUN_TEST(test_emit_with_time_source);
 	return (pus_test_result_t){ cunit_total_tests - cunit_overall_failures, cunit_total_tests };
 }

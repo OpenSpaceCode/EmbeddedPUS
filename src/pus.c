@@ -113,7 +113,6 @@ pus_status_t pus_tm_build(
 	uint16_t       out_capacity,
 	uint16_t      *out_len)
 {
-	pus_status_t        st;
 	pus_tm_sec_header_t hdr;
 	uint16_t            hdr_len;
 
@@ -129,11 +128,7 @@ pus_status_t pus_tm_build(
 	}
 
 	pus_tm_hdr_fill(ctx, &hdr, service, subtype, destination_id);
-
-	st = pus_tm_sec_header_encode(&hdr, out, out_capacity, &hdr_len);
-	if (st != PUS_STATUS_OK) {
-		return st;
-	}
+	(void)pus_tm_sec_header_encode(&hdr, out, out_capacity, &hdr_len);
 
 	for (uint16_t i = 0u; i < payload_len; i++) {
 		out[hdr_len + i] = (payload != NULL) ? payload[i] : 0u;

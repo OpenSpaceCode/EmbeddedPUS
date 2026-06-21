@@ -10,6 +10,7 @@ int main(void)
 	int total_passed = 0;
 	int total_tests  = 0;
 
+	r = test_pus_run_all();            REPORT("pus",        r); total_passed += r.passed; total_tests += r.total;
 	r = test_pus_codec_run_all();      REPORT("codec",      r); total_passed += r.passed; total_tests += r.total;
 	r = test_pus_handler_run_all();    REPORT("handler",    r); total_passed += r.passed; total_tests += r.total;
 	r = test_pus_service_1_run_all();  REPORT("service_1",  r); total_passed += r.passed; total_tests += r.total;

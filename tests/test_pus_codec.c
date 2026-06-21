@@ -173,6 +173,15 @@ static int test_buffer_too_small(void)
 	return 0;
 }
 
+static int test_bad_version(void)
+{
+	uint8_t             buf[PUS_TC_SEC_HEADER_LEN] = {0}; /* version=0 in top nibble */
+	pus_tc_sec_header_t hdr;
+	ASSERT_EQ_INT(PUS_STATUS_BAD_VERSION,
+		pus_tc_sec_header_decode(buf, sizeof(buf), &hdr));
+	return 0;
+}
+
 pus_test_result_t test_pus_codec_run_all(void)
 {
 	RUN_TEST(test_tc_encode);
@@ -182,5 +191,6 @@ pus_test_result_t test_pus_codec_run_all(void)
 	RUN_TEST(test_tm_decode);
 	RUN_TEST(test_null_returns_null);
 	RUN_TEST(test_buffer_too_small);
+	RUN_TEST(test_bad_version);
 	return (pus_test_result_t){ cunit_total_tests - cunit_overall_failures, cunit_total_tests };
 }
