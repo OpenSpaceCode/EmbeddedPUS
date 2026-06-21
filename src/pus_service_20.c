@@ -81,16 +81,11 @@ pus_status_t pus_service_20_emit_report(
 		return PUS_STATUS_NULL;
 	}
 
-	hdr.version          = PUS_VERSION;
-	hdr.time_ref_status  = 0u;
-	hdr.service_type_id  = PUS_SERVICE_PARAMETER_MANAGEMENT;
-	hdr.subtype_id       = PUS_SUBTYPE_PARAMETER_VALUE_REPORT;
-	hdr.msg_type_counter = ctx->tm_counter++;
-	hdr.destination_id   = ctx->default_destination_id;
-	hdr.time             = (ctx->time_source != NULL)
-	                       ? ctx->time_source(ctx->time_source_user_data)
-	                       : 0u;
-	hdr.spare            = 0u;
+	/* Fill header fields but do NOT increment ctx->tm_counter yet — any error
+	 * below must not consume a sequence number. */
+	pus_tm_hdr_fill(ctx, &hdr, PUS_SERVICE_PARAMETER_MANAGEMENT,
+	                PUS_SUBTYPE_PARAMETER_VALUE_REPORT,
+	                ctx->default_destination_id);
 
 	st = pus_tm_sec_header_encode(&hdr, out, sizeof(out), &hdr_len);
 	if (st != PUS_STATUS_OK) {
@@ -124,6 +119,9 @@ pus_status_t pus_service_20_emit_report(
 		}
 		off += value_len;
 	}
+
+	/* All params resolved successfully — now commit the counter. */
+	ctx->tm_counter++;
 
 	if (ctx->tm_sink == NULL) {
 		return PUS_STATUS_OK;

@@ -1,3 +1,4 @@
+#include "pus.h"
 #include "pus_service_1.h"
 #include "pus_services.h"
 #include "pus_codec.h"
@@ -5,7 +6,7 @@
 
 /*
  * Service 1 payload layout:
- *   Success: service(1) | subtype(1) | source_id(2)          = 4 bytes
+ *   Success: service(1) | subtype(1) | source_id(2)           = 4 bytes
  *   Failure: service(1) | subtype(1) | source_id(2) | code(2) = 6 bytes
  */
 #define SUCCESS_PAYLOAD_LEN 4u
@@ -39,27 +40,19 @@ static pus_status_t build_report(
 		return PUS_STATUS_BUFFER_TOO_SMALL;
 	}
 
-	hdr.version          = PUS_VERSION;
-	hdr.time_ref_status  = 0u;
-	hdr.service_type_id  = PUS_SERVICE_REQUEST_VERIFICATION;
-	hdr.subtype_id       = subtype;
-	hdr.msg_type_counter = ctx->tm_counter++;
-	hdr.destination_id   = tc->sec_header.source_id;
-	hdr.time             = (ctx->time_source != NULL)
-	                       ? ctx->time_source(ctx->time_source_user_data)
-	                       : 0u;
-	hdr.spare            = 0u;
+	pus_tm_hdr_fill(ctx, &hdr, PUS_SERVICE_REQUEST_VERIFICATION, subtype,
+	                tc->sec_header.source_id);
 
 	st = pus_tm_sec_header_encode(&hdr, out, capacity, &hdr_len);
 	if (st != PUS_STATUS_OK) {
 		return st;
 	}
 
-	source_id    = tc->sec_header.source_id;
-	payload[0]   = tc->sec_header.service_type_id;
-	payload[1]   = tc->sec_header.subtype_id;
-	payload[2]   = (uint8_t)(source_id >> 8u);
-	payload[3]   = (uint8_t)(source_id & 0xFFu);
+	source_id  = tc->sec_header.source_id;
+	payload[0] = tc->sec_header.service_type_id;
+	payload[1] = tc->sec_header.subtype_id;
+	payload[2] = (uint8_t)(source_id >> 8u);
+	payload[3] = (uint8_t)(source_id & 0xFFu);
 
 	if (include_failure_code) {
 		payload[4] = (uint8_t)(failure_code >> 8u);
@@ -71,6 +64,7 @@ static pus_status_t build_report(
 	}
 
 	*out_len = hdr_len + payload_len;
+	ctx->tm_counter++;
 	return PUS_STATUS_OK;
 }
 
@@ -102,20 +96,27 @@ pus_status_t pus_service_1_emit_success(
 	const pus_tc_packet_t *tc,
 	pus_subtype_t          subtype)
 {
-	uint8_t  buf[REPORT_BUF_LEN];
-	uint16_t len;
-	pus_status_t st;
+	uint8_t  payload[SUCCESS_PAYLOAD_LEN];
+	uint8_t  out[REPORT_BUF_LEN];
+	uint16_t out_len;
+	uint16_t source_id;
 
-	if (ctx == NULL || ctx->tm_sink == NULL) {
+	if (ctx == NULL || tc == NULL) {
+		return PUS_STATUS_NULL;
+	}
+	if (ctx->tm_sink == NULL) {
 		return PUS_STATUS_OK;
 	}
 
-	st = pus_service_1_build_success(ctx, tc, subtype, buf, sizeof(buf), &len);
-	if (st != PUS_STATUS_OK) {
-		return st;
-	}
+	source_id  = tc->sec_header.source_id;
+	payload[0] = tc->sec_header.service_type_id;
+	payload[1] = tc->sec_header.subtype_id;
+	payload[2] = (uint8_t)(source_id >> 8u);
+	payload[3] = (uint8_t)(source_id & 0xFFu);
 
-	return ctx->tm_sink(ctx->tm_sink_user_data, buf, len);
+	return pus_tm_build(ctx, PUS_SERVICE_REQUEST_VERIFICATION, subtype,
+	                    source_id, payload, SUCCESS_PAYLOAD_LEN,
+	                    out, sizeof(out), &out_len);
 }
 
 pus_status_t pus_service_1_emit_failure(
@@ -124,19 +125,27 @@ pus_status_t pus_service_1_emit_failure(
 	pus_subtype_t          subtype,
 	uint16_t               failure_code)
 {
-	uint8_t  buf[REPORT_BUF_LEN];
-	uint16_t len;
-	pus_status_t st;
+	uint8_t  payload[FAILURE_PAYLOAD_LEN];
+	uint8_t  out[REPORT_BUF_LEN];
+	uint16_t out_len;
+	uint16_t source_id;
 
-	if (ctx == NULL || ctx->tm_sink == NULL) {
+	if (ctx == NULL || tc == NULL) {
+		return PUS_STATUS_NULL;
+	}
+	if (ctx->tm_sink == NULL) {
 		return PUS_STATUS_OK;
 	}
 
-	st = pus_service_1_build_failure(ctx, tc, subtype, failure_code,
-	                                 buf, sizeof(buf), &len);
-	if (st != PUS_STATUS_OK) {
-		return st;
-	}
+	source_id  = tc->sec_header.source_id;
+	payload[0] = tc->sec_header.service_type_id;
+	payload[1] = tc->sec_header.subtype_id;
+	payload[2] = (uint8_t)(source_id >> 8u);
+	payload[3] = (uint8_t)(source_id & 0xFFu);
+	payload[4] = (uint8_t)(failure_code >> 8u);
+	payload[5] = (uint8_t)(failure_code & 0xFFu);
 
-	return ctx->tm_sink(ctx->tm_sink_user_data, buf, len);
+	return pus_tm_build(ctx, PUS_SERVICE_REQUEST_VERIFICATION, subtype,
+	                    source_id, payload, FAILURE_PAYLOAD_LEN,
+	                    out, sizeof(out), &out_len);
 }

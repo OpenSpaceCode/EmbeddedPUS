@@ -48,7 +48,6 @@ typedef struct {
 /** @brief Runtime state for an EmbeddedPUS instance. Allocate statically. */
 struct pus_context {
 	pus_handler_entry_t  handler_table[PUS_MAX_TC_HANDLERS];
-	uint16_t             handler_count;
 	uint16_t             tm_counter;
 	uint16_t             default_source_id;
 	uint16_t             default_destination_id;

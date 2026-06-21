@@ -56,6 +56,10 @@ pus_status_t pus_tc_sec_header_decode(
 	header->time            =  read_u32_be(&data[5]);
 	header->spare           =  data[9];
 
+	if (header->version != PUS_VERSION) {
+		return PUS_STATUS_BAD_VERSION;
+	}
+
 	return PUS_STATUS_OK;
 }
 

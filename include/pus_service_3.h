@@ -34,14 +34,14 @@ typedef struct {
 
 pus_status_t pus_service_3_init(pus_service_3_ctx_t *s3);
 
-/** Register a housekeeping structure (responds to TC[3,27], emits TM[3,25]). */
+/** Register a housekeeping structure provider for the given SID. */
 pus_status_t pus_service_3_register_hk(
 	pus_service_3_ctx_t *s3,
 	uint16_t             sid,
 	pus_hk_provider_t    provider,
 	void                *user_data);
 
-/** Register a diagnostic structure (responds to TC[3,28], emits TM[3,26]). */
+/** Register a diagnostic structure provider for the given SID. */
 pus_status_t pus_service_3_register_diag(
 	pus_service_3_ctx_t *s3,
 	uint16_t             sid,

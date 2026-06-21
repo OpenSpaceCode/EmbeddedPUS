@@ -1,6 +1,6 @@
+#include "pus.h"
 #include "pus_service_17.h"
 #include "pus_services.h"
-#include "pus_codec.h"
 #include "pus_handler.h"
 #include <stddef.h>
 
@@ -15,35 +15,11 @@ static pus_status_t build_and_emit(
 	const uint8_t *payload,
 	uint16_t       payload_len)
 {
-	pus_status_t        st;
-	pus_tm_sec_header_t hdr;
-	uint8_t             out[MAX_OUT_LEN];
-	uint16_t            hdr_len;
+	uint8_t  out[MAX_OUT_LEN];
+	uint16_t out_len;
 
-	hdr.version          = PUS_VERSION;
-	hdr.time_ref_status  = 0u;
-	hdr.service_type_id  = PUS_SERVICE_TEST;
-	hdr.subtype_id       = subtype;
-	hdr.msg_type_counter = ctx->tm_counter++;
-	hdr.destination_id   = destination_id;
-	hdr.time             = (ctx->time_source != NULL)
-	                       ? ctx->time_source(ctx->time_source_user_data)
-	                       : 0u;
-	hdr.spare            = 0u;
-
-	st = pus_tm_sec_header_encode(&hdr, out, sizeof(out), &hdr_len);
-	if (st != PUS_STATUS_OK) {
-		return st;
-	}
-
-	for (uint16_t i = 0u; i < payload_len; i++) {
-		out[hdr_len + i] = payload[i];
-	}
-
-	if (ctx->tm_sink == NULL) {
-		return PUS_STATUS_OK;
-	}
-	return ctx->tm_sink(ctx->tm_sink_user_data, out, hdr_len + payload_len);
+	return pus_tm_build(ctx, PUS_SERVICE_TEST, subtype, destination_id,
+	                    payload, payload_len, out, sizeof(out), &out_len);
 }
 
 pus_status_t pus_service_17_emit_alive_report(

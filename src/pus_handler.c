@@ -29,7 +29,6 @@ pus_status_t pus_handler_register(
 			ctx->handler_table[i].handler   = handler;
 			ctx->handler_table[i].user_data = user_data;
 			ctx->handler_table[i].is_used   = 1u;
-			ctx->handler_count++;
 			return PUS_STATUS_OK;
 		}
 	}

@@ -53,8 +53,12 @@ static int test_update_on_duplicate(void)
 	int idx = pus_handler_find(&ctx, 17u, 1u);
 	ASSERT_TRUE(idx >= 0);
 	ASSERT_TRUE(ctx.handler_table[idx].handler == other_handler);
-	/* update must not add a new slot */
-	ASSERT_EQ_INT(1, ctx.handler_count);
+	/* update must not add a new slot — verify by counting is_used entries */
+	int used = 0;
+	for (uint16_t i = 0u; i < PUS_MAX_TC_HANDLERS; i++) {
+		if (ctx.handler_table[i].is_used) used++;
+	}
+	ASSERT_EQ_INT(1, used);
 
 	return 0;
 }
