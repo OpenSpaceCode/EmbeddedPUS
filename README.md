@@ -27,7 +27,7 @@ EmbeddedSpacePacket/
 ├── tests/
 │   ├── cunit.h              # Minimal test framework
 │   └── unit_tests.c         # Unit tests
-├── scripts/
+├── tools/
 │   └── coverage_html.sh     # Coverage report
 ├── build/                   # Build artifacts 
 ├── Makefile
@@ -62,7 +62,6 @@ make example
 
 ```bash
 make ctest
-./build/tests/ctest
 ```
 
 ### Coverage (HTML)
