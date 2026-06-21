@@ -14,8 +14,6 @@
 
 - TM[3,25] housekeeping parameter report
 - TM[3,26] diagnostic parameter report
-- TC[3,27] generate a one shot report for housekeeping parameter report structures
-- TC[3,28] generate a one shot report for diagnostic parameter report structures
 
 ### ST[05] event reporting
 

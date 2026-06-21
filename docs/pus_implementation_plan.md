@@ -392,9 +392,6 @@ pus_status_t pus_service_3_register_handlers(pus_context_t *ctx,
     pus_service_3_ctx_t *svc);
 ```
 
-TC payload format for `TC[3,27]` and `TC[3,28]`:
-`[struct_id (2 bytes)]`
-
 TM payload format for `TM[3,25]` and `TM[3,26]`:
 `[struct_id (2 bytes), ...provider-supplied parameter bytes...]`
 

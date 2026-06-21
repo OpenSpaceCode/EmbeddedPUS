@@ -21,4 +21,9 @@
 #define PUS_MAX_TC_PAYLOAD_LEN 256u
 #endif
 
+#ifndef PUS_SERVICE_3_MAX_STRUCTURES
+/** @brief Maximum number of HK+diagnostic structures per Service 3 context. */
+#define PUS_SERVICE_3_MAX_STRUCTURES 8u
+#endif
+
 #endif /* PUS_CONFIG_H */
