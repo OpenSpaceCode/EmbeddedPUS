@@ -157,7 +157,7 @@ static int test_buffer_too_small(void)
 {
 	pus_tc_sec_header_t tc_hdr = {0};
 	pus_tm_sec_header_t tm_hdr = {0};
-	uint8_t  small[4];
+	uint8_t  small[4] = {0};
 	uint16_t len;
 
 	ASSERT_EQ_INT(PUS_STATUS_BAD_LENGTH,

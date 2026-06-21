@@ -35,3 +35,6 @@ $(BUILD_DIR)/tests/%.o: tests/%.c
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+coverage-html:
+	bash tools/coverage_html.sh
