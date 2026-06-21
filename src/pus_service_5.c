@@ -51,7 +51,7 @@ pus_status_t pus_service_5_emit(
 		out[hdr_len + EVID_LEN + i] = aux_data[i];
 	}
 
-	total_len = hdr_len + EVID_LEN + aux_len;
+	total_len = (uint16_t)(hdr_len + EVID_LEN + aux_len);
 
 	if (ctx->tm_sink == NULL) {
 		return PUS_STATUS_OK;

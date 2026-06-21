@@ -111,7 +111,7 @@ static pus_status_t emit_report(
 	if (ctx->tm_sink == NULL) {
 		return PUS_STATUS_OK;
 	}
-	return ctx->tm_sink(ctx->tm_sink_user_data, out, hdr_len + SID_LEN + data_len);
+	return ctx->tm_sink(ctx->tm_sink_user_data, out, (uint16_t)(hdr_len + SID_LEN + data_len));
 }
 
 pus_status_t pus_service_3_init(pus_service_3_ctx_t *s3)
