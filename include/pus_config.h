@@ -26,4 +26,9 @@
 #define PUS_SERVICE_3_MAX_STRUCTURES 8u
 #endif
 
+#ifndef PUS_SERVICE_20_MAX_PARAMS
+/** @brief Maximum number of registered parameters per Service 20 context. */
+#define PUS_SERVICE_20_MAX_PARAMS 16u
+#endif
+
 #endif /* PUS_CONFIG_H */
