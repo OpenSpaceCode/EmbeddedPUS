@@ -6,14 +6,16 @@
 #include "pus_types.h"
 
 /**
- * Emit a Service 5 event report TM packet.
- *
- * subtype   — one of PUS_SUBTYPE_EVENT_* from pus_services.h
- * event_id  — ECSS Event Definition ID (EVID), 2 bytes on the wire
- * aux_data  — optional auxiliary data appended after the event ID (may be NULL)
- * aux_len   — length of aux_data in bytes (0 when aux_data is NULL)
- *
+ * @brief Build and emit a ST[05] event report (TM[5,x]).
  * Returns PUS_STATUS_OK silently when no TM sink is configured.
+ *
+ * @param[in,out] ctx      Active PUS context (provides TM sink).
+ * @param[in]     subtype  Event severity; one of PUS_SUBTYPE_EVENT_* from pus_services.h.
+ * @param[in]     event_id ECSS Event Definition ID (EVID), written as 2 bytes on the wire.
+ * @param[in]     aux_data Optional auxiliary data appended after the event ID (may be NULL).
+ * @param[in]     aux_len  Length of aux_data in bytes; must be 0 when aux_data is NULL.
+ *
+ * @return PUS_STATUS_NULL, PUS_STATUS_BUFFER_TOO_SMALL, or PUS_STATUS_OK.
  */
 pus_status_t pus_service_5_emit(
 	pus_context_t *ctx,
