@@ -9,6 +9,7 @@
 #include <string.h>
 
 static int cunit_overall_failures = 0;
+static int cunit_total_tests      = 0;
 
 #define ASSERT_EQ_INT(expected, actual)                                        \
   do {                                                                         \
@@ -38,6 +39,7 @@ static int cunit_overall_failures = 0;
 #define RUN_TEST(fn)                                                           \
   do {                                                                         \
     printf("RUN %s\n", #fn);                                                   \
+    cunit_total_tests++;                                                       \
     int r = fn();                                                              \
     if (r == 0)                                                                \
       printf("PASS %s\n", #fn);                                                \

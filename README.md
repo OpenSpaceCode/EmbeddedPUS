@@ -62,7 +62,6 @@ make example
 
 ```bash
 make ctest
-./build/tests/ctest
 ```
 
 ### Coverage (HTML)
