@@ -197,6 +197,48 @@ static int test_tc_process_completion_failure(void)
 	return 0;
 }
 
+/* ---- PUS_ACK_PROGRESS — handler-side responsibility ---- */
+
+/*
+ * Mock handler that manually emits TM[1,5] progress success when the TC has
+ * the PUS_ACK_PROGRESS flag set, as documented in pus_service_1.h.
+ */
+static pus_status_t progress_handler(
+	pus_context_t         *ctx,
+	const pus_tc_packet_t *tc,
+	void                  *ud)
+{
+	(void)ud;
+	if (tc->sec_header.ack_flags & PUS_ACK_PROGRESS) {
+		pus_service_1_emit_success(ctx, tc,
+			PUS_SUBTYPE_VERIFICATION_PROGRESS_SUCCESS);
+	}
+	return PUS_STATUS_OK;
+}
+
+static int test_tc_process_progress_ack_emitted_by_handler(void)
+{
+	pus_context_t ctx;
+	pus_init(&ctx);
+	ctx.tm_sink = test_sink;
+	pus_handler_register(&ctx, 17u, 1u, progress_handler, NULL);
+
+	uint8_t buf[PUS_TC_SEC_HEADER_LEN];
+	make_tc_buf(buf, 17u, 1u,
+	            (uint8_t)(PUS_ACK_ACCEPTANCE | PUS_ACK_PROGRESS | PUS_ACK_COMPLETION));
+	g_len = 0;
+	ASSERT_EQ_INT(PUS_STATUS_OK, pus_tc_process(&ctx, buf, sizeof(buf)));
+
+	/* The last packet forwarded to the sink should be TM[1,7] completion success.
+	 * TM[1,5] progress was emitted inside the handler; we verify the counter
+	 * advanced by 3 (acceptance=1, progress=1, completion=1). */
+	ASSERT_EQ_INT(3, ctx.tm_counter);
+	/* Last captured packet: service=1, subtype=7 (completion success) */
+	ASSERT_EQ_INT(1u, g_buf[1]);
+	ASSERT_EQ_INT(PUS_SUBTYPE_VERIFICATION_COMPLETION_SUCCESS, g_buf[2]);
+	return 0;
+}
+
 /* ---- pus_tm_build ---- */
 
 static int test_tm_build_null(void)
@@ -285,6 +327,7 @@ pus_test_result_t test_pus_run_all(void)
 	RUN_TEST(test_tc_process_no_handler);
 	RUN_TEST(test_tc_process_all_acks_success);
 	RUN_TEST(test_tc_process_completion_failure);
+	RUN_TEST(test_tc_process_progress_ack_emitted_by_handler);
 	RUN_TEST(test_tm_build_null);
 	RUN_TEST(test_tm_build_payload_too_large);
 	RUN_TEST(test_tm_build_capacity_too_small);

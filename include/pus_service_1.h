@@ -9,7 +9,20 @@
 /** @{ */
 #define PUS_ACK_ACCEPTANCE 0x08u /**< Request acceptance verification report. */
 #define PUS_ACK_START      0x04u /**< Request start of execution verification report. */
-#define PUS_ACK_PROGRESS   0x02u /**< Request progress verification report. */
+/**
+ * @brief Request progress verification report.
+ * @note  pus_tc_process() does NOT emit progress reports automatically.
+ *        Handlers that need them must call pus_service_1_emit_success() with
+ *        PUS_SUBTYPE_VERIFICATION_PROGRESS_SUCCESS (or _FAILURE) at suitable
+ *        points during their own execution, checking this flag themselves:
+ *        @code
+ *        if (tc->sec_header.ack_flags & PUS_ACK_PROGRESS) {
+ *            pus_service_1_emit_success(ctx, tc,
+ *                PUS_SUBTYPE_VERIFICATION_PROGRESS_SUCCESS);
+ *        }
+ *        @endcode
+ */
+#define PUS_ACK_PROGRESS   0x02u
 #define PUS_ACK_COMPLETION 0x01u /**< Request completion verification report. */
 /** @} */
 
