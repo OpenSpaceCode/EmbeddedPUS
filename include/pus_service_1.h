@@ -5,15 +5,25 @@
 #include "pus_context.h"
 #include "pus_types.h"
 
-/** ACK flag bits in TC secondary header ack_flags. */
-#define PUS_ACK_ACCEPTANCE 0x08u
-#define PUS_ACK_START      0x04u
-#define PUS_ACK_PROGRESS   0x02u
-#define PUS_ACK_COMPLETION 0x01u
+/** @defgroup ack_flags TC secondary header ACK flag bits */
+/** @{ */
+#define PUS_ACK_ACCEPTANCE 0x08u /**< Request acceptance verification report. */
+#define PUS_ACK_START      0x04u /**< Request start of execution verification report. */
+#define PUS_ACK_PROGRESS   0x02u /**< Request progress verification report. */
+#define PUS_ACK_COMPLETION 0x01u /**< Request completion verification report. */
+/** @} */
 
 /**
- * Build an encoded Service 1 success report (TM[1,1], TM[1,3], TM[1,7])
- * into a caller-provided buffer. Use subtype constants from pus_services.h.
+ * @brief Build a ST[01] success report into a caller-provided buffer.
+ *
+ * @param[in,out] ctx      Active PUS context.
+ * @param[in]     tc       The TC being verified.
+ * @param[in]     subtype  Subtype constant from pus_services.h (e.g. PUS_SUBTYPE_VERIFICATION_ACCEPTANCE_SUCCESS).
+ * @param[out]    out      Output byte buffer.
+ * @param[in]     capacity Output buffer size in bytes.
+ * @param[out]    out_len  Receives the number of bytes written.
+ *
+ * @return PUS_STATUS_NULL, PUS_STATUS_BUFFER_TOO_SMALL, or PUS_STATUS_OK.
  */
 pus_status_t pus_service_1_build_success(
 	pus_context_t         *ctx,
@@ -24,8 +34,17 @@ pus_status_t pus_service_1_build_success(
 	uint16_t              *out_len);
 
 /**
- * Build an encoded Service 1 failure report (TM[1,2], TM[1,4], TM[1,8], TM[1,10])
- * into a caller-provided buffer.
+ * @brief Build a ST[01] failure report into a caller-provided buffer.
+ *
+ * @param[in,out] ctx          Active PUS context.
+ * @param[in]     tc           The TC being verified.
+ * @param[in]     subtype      Failure subtype (e.g. PUS_SUBTYPE_VERIFICATION_ROUTING_FAILURE).
+ * @param[in]     failure_code Application-defined 2-byte failure code appended to the payload.
+ * @param[out]    out          Output byte buffer.
+ * @param[in]     capacity     Output buffer size in bytes.
+ * @param[out]    out_len      Receives the number of bytes written.
+ *
+ * @return PUS_STATUS_NULL, PUS_STATUS_BUFFER_TOO_SMALL, or PUS_STATUS_OK.
  */
 pus_status_t pus_service_1_build_failure(
 	pus_context_t         *ctx,
@@ -37,8 +56,14 @@ pus_status_t pus_service_1_build_failure(
 	uint16_t              *out_len);
 
 /**
- * Build and forward a success report to ctx->tm_sink.
+ * @brief Build and forward a success report to ctx->tm_sink.
  * Returns PUS_STATUS_OK silently when no sink is configured.
+ *
+ * @param[in,out] ctx     Active PUS context.
+ * @param[in]     tc      The TC being verified.
+ * @param[in]     subtype Success subtype constant.
+ *
+ * @return PUS_STATUS_NULL or PUS_STATUS_OK.
  */
 pus_status_t pus_service_1_emit_success(
 	pus_context_t         *ctx,
@@ -46,8 +71,15 @@ pus_status_t pus_service_1_emit_success(
 	pus_subtype_t          subtype);
 
 /**
- * Build and forward a failure report to ctx->tm_sink.
+ * @brief Build and forward a failure report to ctx->tm_sink.
  * Returns PUS_STATUS_OK silently when no sink is configured.
+ *
+ * @param[in,out] ctx          Active PUS context.
+ * @param[in]     tc           The TC being verified.
+ * @param[in]     subtype      Failure subtype constant.
+ * @param[in]     failure_code 2-byte failure code appended to the payload.
+ *
+ * @return PUS_STATUS_NULL or PUS_STATUS_OK.
  */
 pus_status_t pus_service_1_emit_failure(
 	pus_context_t         *ctx,

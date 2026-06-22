@@ -4,8 +4,16 @@
 #include "pus_context.h"
 
 /**
- * Register or update a TC handler for a (service, subtype) pair.
- * Updating an existing pair replaces the handler and user_data in place.
+ * @brief Register or update a TC handler for a (service, subtype) pair.
+ * If the pair is already registered, the handler and user_data are replaced.
+ *
+ * @param[in,out] ctx       Active PUS context.
+ * @param[in]     service   Service type identifier.
+ * @param[in]     subtype   Service subtype identifier.
+ * @param[in]     handler   Callback invoked when a matching TC is received.
+ * @param[in]     user_data Opaque pointer forwarded to the handler.
+ *
+ * @return PUS_STATUS_NULL, PUS_STATUS_TABLE_FULL, or PUS_STATUS_OK.
  */
 pus_status_t pus_handler_register(
 	pus_context_t    *ctx,
@@ -15,7 +23,13 @@ pus_status_t pus_handler_register(
 	void             *user_data);
 
 /**
- * Return the table index of a registered handler, or -1 if not found.
+ * @brief Return the handler table index for a (service, subtype) pair.
+ *
+ * @param[in] ctx     Active PUS context.
+ * @param[in] service Service type identifier.
+ * @param[in] subtype Service subtype identifier.
+ *
+ * @return Table index (>= 0) if found, -1 if not registered.
  */
 int pus_handler_find(
 	const pus_context_t *ctx,

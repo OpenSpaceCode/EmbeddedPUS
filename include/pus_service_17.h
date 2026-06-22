@@ -6,16 +6,27 @@
 #include "pus_types.h"
 
 /**
- * Emit TM[17,2] are-you-alive connection test report.
- * Payload: empty (ECSS §8.17.3.2).
+ * @brief Emit TM[17,2] are-you-alive report (ECSS §8.17.3.2).
+ * Payload is empty.
+ *
+ * @param[in,out] ctx            Active PUS context (provides TM sink).
+ * @param[in]     destination_id Destination APID for the report.
+ *
+ * @return PUS_STATUS_NULL or PUS_STATUS_OK.
  */
 pus_status_t pus_service_17_emit_alive_report(
 	pus_context_t *ctx,
 	uint16_t       destination_id);
 
 /**
- * Emit TM[17,4] on-board connection test report.
- * Payload: tested application process ID (2 bytes, ECSS §8.17.3.4).
+ * @brief Emit TM[17,4] on-board connection test report (ECSS §8.17.3.4).
+ * Payload: tested application process APID (2 bytes).
+ *
+ * @param[in,out] ctx            Active PUS context (provides TM sink).
+ * @param[in]     apid           Tested application process ID echoed in the payload.
+ * @param[in]     destination_id Destination APID for the report.
+ *
+ * @return PUS_STATUS_NULL or PUS_STATUS_OK.
  */
 pus_status_t pus_service_17_emit_connection_report(
 	pus_context_t *ctx,
@@ -23,8 +34,12 @@ pus_status_t pus_service_17_emit_connection_report(
 	uint16_t       destination_id);
 
 /**
- * Register TC[17,1] and TC[17,3] handlers with the main context.
- * Handlers reply directly to the TC source_id.
+ * @brief Register TC[17,1] and TC[17,3] handlers with the PUS context.
+ * Handlers reply directly to the source_id of the incoming TC.
+ *
+ * @param[in,out] ctx Active PUS context.
+ *
+ * @return PUS_STATUS_NULL, PUS_STATUS_TABLE_FULL, or PUS_STATUS_OK.
  */
 pus_status_t pus_service_17_register_handlers(pus_context_t *ctx);
 
