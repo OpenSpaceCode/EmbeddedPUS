@@ -33,28 +33,30 @@ static pus_status_t register_structure(
 		return PUS_STATUS_NULL;
 	}
 
-	for (uint8_t i = 0u; i < PUS_SERVICE_3_MAX_STRUCTURES; i++) {
-		if (s3->structures[i].is_used &&
-		    s3->structures[i].sid  == sid &&
-		    s3->structures[i].kind == kind) {
-			s3->structures[i].provider  = provider;
-			s3->structures[i].user_data = user_data;
-			return PUS_STATUS_OK;
+	{
+		int32_t first_free = -1;
+		for (uint8_t i = 0u; i < PUS_SERVICE_3_MAX_STRUCTURES; i++) {
+			if (s3->structures[i].is_used) {
+				if (s3->structures[i].sid  == sid &&
+				    s3->structures[i].kind == kind) {
+					s3->structures[i].provider  = provider;
+					s3->structures[i].user_data = user_data;
+					return PUS_STATUS_OK;
+				}
+			} else if (first_free < 0) {
+				first_free = (int32_t)i;
+			}
 		}
-	}
-
-	for (uint8_t i = 0u; i < PUS_SERVICE_3_MAX_STRUCTURES; i++) {
-		if (!s3->structures[i].is_used) {
-			s3->structures[i].sid       = sid;
-			s3->structures[i].kind      = kind;
-			s3->structures[i].provider  = provider;
-			s3->structures[i].user_data = user_data;
-			s3->structures[i].is_used   = 1u;
-			return PUS_STATUS_OK;
+		if (first_free < 0) {
+			return PUS_STATUS_TABLE_FULL;
 		}
+		s3->structures[first_free].sid       = sid;
+		s3->structures[first_free].kind      = kind;
+		s3->structures[first_free].provider  = provider;
+		s3->structures[first_free].user_data = user_data;
+		s3->structures[first_free].is_used   = 1u;
+		return PUS_STATUS_OK;
 	}
-
-	return PUS_STATUS_TABLE_FULL;
 }
 
 static pus_status_t emit_report(

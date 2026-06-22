@@ -25,28 +25,30 @@ pus_status_t pus_handler_register(
 		return PUS_STATUS_NO_HANDLER;
 	}
 
-	for (uint16_t i = 0u; i < PUS_MAX_TC_HANDLERS; i++) {
-		if (ctx->handler_table[i].is_used &&
-		    ctx->handler_table[i].service == service &&
-		    ctx->handler_table[i].subtype == subtype) {
-			ctx->handler_table[i].handler   = handler;
-			ctx->handler_table[i].user_data = user_data;
-			return PUS_STATUS_OK;
+	{
+		int32_t first_free = -1;
+		for (uint16_t i = 0u; i < PUS_MAX_TC_HANDLERS; i++) {
+			if (ctx->handler_table[i].is_used) {
+				if (ctx->handler_table[i].service == service &&
+				    ctx->handler_table[i].subtype == subtype) {
+					ctx->handler_table[i].handler   = handler;
+					ctx->handler_table[i].user_data = user_data;
+					return PUS_STATUS_OK;
+				}
+			} else if (first_free < 0) {
+				first_free = (int32_t)i;
+			}
 		}
-	}
-
-	for (uint16_t i = 0u; i < PUS_MAX_TC_HANDLERS; i++) {
-		if (!ctx->handler_table[i].is_used) {
-			ctx->handler_table[i].service   = service;
-			ctx->handler_table[i].subtype   = subtype;
-			ctx->handler_table[i].handler   = handler;
-			ctx->handler_table[i].user_data = user_data;
-			ctx->handler_table[i].is_used   = 1u;
-			return PUS_STATUS_OK;
+		if (first_free < 0) {
+			return PUS_STATUS_TABLE_FULL;
 		}
+		ctx->handler_table[first_free].service   = service;
+		ctx->handler_table[first_free].subtype   = subtype;
+		ctx->handler_table[first_free].handler   = handler;
+		ctx->handler_table[first_free].user_data = user_data;
+		ctx->handler_table[first_free].is_used   = 1u;
+		return PUS_STATUS_OK;
 	}
-
-	return PUS_STATUS_TABLE_FULL;
 }
 
 int pus_handler_find(

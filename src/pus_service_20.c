@@ -39,31 +39,32 @@ pus_status_t pus_service_20_register_param(
 		return PUS_STATUS_NULL;
 	}
 
-	/* Update existing entry */
-	for (uint8_t i = 0u; i < PUS_SERVICE_20_MAX_PARAMS; i++) {
-		if (s20->params[i].is_used && s20->params[i].param_id == param_id) {
-			s20->params[i].value_len  = value_len;
-			s20->params[i].getter     = getter;
-			s20->params[i].setter     = setter;
-			s20->params[i].user_data  = user_data;
-			return PUS_STATUS_OK;
+	{
+		int32_t first_free = -1;
+		for (uint8_t i = 0u; i < PUS_SERVICE_20_MAX_PARAMS; i++) {
+			if (s20->params[i].is_used) {
+				if (s20->params[i].param_id == param_id) {
+					s20->params[i].value_len = value_len;
+					s20->params[i].getter    = getter;
+					s20->params[i].setter    = setter;
+					s20->params[i].user_data = user_data;
+					return PUS_STATUS_OK;
+				}
+			} else if (first_free < 0) {
+				first_free = (int32_t)i;
+			}
 		}
-	}
-
-	/* Find free slot */
-	for (uint8_t i = 0u; i < PUS_SERVICE_20_MAX_PARAMS; i++) {
-		if (!s20->params[i].is_used) {
-			s20->params[i].param_id   = param_id;
-			s20->params[i].value_len  = value_len;
-			s20->params[i].getter     = getter;
-			s20->params[i].setter     = setter;
-			s20->params[i].user_data  = user_data;
-			s20->params[i].is_used    = 1u;
-			return PUS_STATUS_OK;
+		if (first_free < 0) {
+			return PUS_STATUS_TABLE_FULL;
 		}
+		s20->params[first_free].param_id  = param_id;
+		s20->params[first_free].value_len = value_len;
+		s20->params[first_free].getter    = getter;
+		s20->params[first_free].setter    = setter;
+		s20->params[first_free].user_data = user_data;
+		s20->params[first_free].is_used   = 1u;
+		return PUS_STATUS_OK;
 	}
-
-	return PUS_STATUS_TABLE_FULL;
 }
 
 pus_status_t pus_service_20_emit_report(
