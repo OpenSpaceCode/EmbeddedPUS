@@ -1,6 +1,7 @@
 #include "pus_service_20.h"
 #include "pus_services.h"
 #include "pus_codec.h"
+#include "pus_internal.h"
 #include "pus_handler.h"
 #include <string.h>
 #include <stddef.h>

@@ -2,6 +2,7 @@
 #include "pus_service_1.h"
 #include "pus_services.h"
 #include "pus_codec.h"
+#include "pus_internal.h"
 #include <stddef.h>
 
 /*
