@@ -310,6 +310,35 @@ static int test_tm_build_no_sink(void)
 	return 0;
 }
 
+/* ---- tm_counter increments ---- */
+
+static int test_tm_counter_increments_with_sink(void)
+{
+	pus_context_t ctx;
+	pus_init(&ctx);
+	ctx.tm_sink = test_sink;
+	uint8_t buf[64]; uint16_t len;
+
+	ASSERT_EQ_INT(0, ctx.tm_counter);
+	pus_tm_build(&ctx, 17u, 2u, 0u, NULL, 0u, buf, sizeof(buf), &len);
+	ASSERT_EQ_INT(1, ctx.tm_counter);
+	pus_tm_build(&ctx, 17u, 2u, 0u, NULL, 0u, buf, sizeof(buf), &len);
+	ASSERT_EQ_INT(2, ctx.tm_counter);
+	return 0;
+}
+
+static int test_tm_counter_increments_without_sink(void)
+{
+	pus_context_t ctx;
+	pus_init(&ctx); /* no sink */
+	uint8_t buf[64]; uint16_t len;
+
+	ASSERT_EQ_INT(0, ctx.tm_counter);
+	pus_tm_build(&ctx, 17u, 2u, 0u, NULL, 0u, buf, sizeof(buf), &len);
+	ASSERT_EQ_INT(1, ctx.tm_counter);
+	return 0;
+}
+
 pus_test_result_t test_pus_run_all(void)
 {
 	RUN_TEST(test_init_null);
@@ -333,5 +362,7 @@ pus_test_result_t test_pus_run_all(void)
 	RUN_TEST(test_tm_build_capacity_too_small);
 	RUN_TEST(test_tm_build_null_payload_zero_fills);
 	RUN_TEST(test_tm_build_no_sink);
+	RUN_TEST(test_tm_counter_increments_with_sink);
+	RUN_TEST(test_tm_counter_increments_without_sink);
 	return (pus_test_result_t){ cunit_total_tests - cunit_overall_failures, cunit_total_tests };
 }

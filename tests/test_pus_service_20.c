@@ -505,6 +505,25 @@ static int test_tc_20_3_setter_failure(void)
 	return 0;
 }
 
+static int test_emit_report_count_zero(void)
+{
+	pus_context_t        ctx = make_ctx();
+	pus_service_20_ctx_t s20;
+	pus_service_20_init(&s20);
+	g_len = 0;
+
+	/* count=0: payload is just the N byte; no param data */
+	const uint16_t ids[] = { 0u }; /* content irrelevant — loop won't execute */
+	ASSERT_EQ_INT(PUS_STATUS_OK,
+		pus_service_20_emit_report(&ctx, &s20, ids, 0u));
+
+	/* header(12) + N(1) = 13 bytes */
+	ASSERT_EQ_INT(PUS_TM_SEC_HEADER_LEN + 1, g_len);
+	ASSERT_EQ_INT(0, g_buf[PUS_TM_SEC_HEADER_LEN]); /* N = 0 */
+	ASSERT_EQ_INT(1, ctx.tm_counter);
+	return 0;
+}
+
 static int test_register_handlers_null(void)
 {
 	pus_context_t        ctx;
@@ -532,6 +551,7 @@ pus_test_result_t test_pus_service_20_run_all(void)
 	RUN_TEST(test_emit_report_getter_failure);
 	RUN_TEST(test_emit_report_buffer_too_small);
 	RUN_TEST(test_emit_report_no_sink);
+	RUN_TEST(test_emit_report_count_zero);
 	RUN_TEST(test_tc_20_1_success);
 	RUN_TEST(test_tc_20_1_bad_length);
 	RUN_TEST(test_tc_20_1_n_too_large);
