@@ -115,10 +115,10 @@ void app_on_tc_received(const uint8_t *raw, uint16_t len)
 void app_periodic(void)
 {
     /* 7. Emit periodic housekeeping */
-    pus_service_3_emit_hk(&g_pus, &g_s3, 0x0001);
+    pus_service_3_emit_hk(&g_pus, &g_s3, 0x0001u);
 
     /* 8. Emit an event */
-    pus_service_5_emit(&g_pus, PUS_SUBTYPE_EVENT_INFO, 0x0101, NULL, 0);
+    pus_service_5_emit(&g_pus, PUS_SUBTYPE_EVENT_INFO, 0x0101u, NULL, 0u);
 }
 ```
 
