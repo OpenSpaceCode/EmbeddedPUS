@@ -69,8 +69,8 @@ pus_status_t pus_service_1_build_failure(
 	uint16_t              *out_len);
 
 /**
- * @brief Build and forward a success report to ctx->tm_sink.
- * Returns PUS_STATUS_OK silently when no sink is configured.
+ * @brief Build a success report and forward it to ctx->tm_sink.
+ * Increments ctx->tm_counter regardless of whether a TM sink is configured.
  *
  * @param[in,out] ctx     Active PUS context.
  * @param[in]     tc      The TC being verified.
@@ -84,8 +84,8 @@ pus_status_t pus_service_1_emit_success(
 	pus_subtype_t          subtype);
 
 /**
- * @brief Build and forward a failure report to ctx->tm_sink.
- * Returns PUS_STATUS_OK silently when no sink is configured.
+ * @brief Build a failure report and forward it to ctx->tm_sink.
+ * Increments ctx->tm_counter regardless of whether a TM sink is configured.
  *
  * @param[in,out] ctx          Active PUS context.
  * @param[in]     tc           The TC being verified.

@@ -99,9 +99,6 @@ pus_status_t pus_service_1_emit_success(
 	if (ctx == NULL || tc == NULL) {
 		return PUS_STATUS_NULL;
 	}
-	if (ctx->tm_sink == NULL) {
-		return PUS_STATUS_OK;
-	}
 
 	source_id  = tc->sec_header.source_id;
 	payload[0] = tc->sec_header.service_type_id;
@@ -127,9 +124,6 @@ pus_status_t pus_service_1_emit_failure(
 
 	if (ctx == NULL || tc == NULL) {
 		return PUS_STATUS_NULL;
-	}
-	if (ctx->tm_sink == NULL) {
-		return PUS_STATUS_OK;
 	}
 
 	source_id  = tc->sec_header.source_id;

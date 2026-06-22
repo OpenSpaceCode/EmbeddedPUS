@@ -117,9 +117,12 @@ static int test_emit_no_sink_ok(void)
 	ASSERT_EQ_INT(PUS_STATUS_OK,
 		pus_service_1_emit_success(&ctx, &tc,
 			PUS_SUBTYPE_VERIFICATION_ACCEPTANCE_SUCCESS));
+	ASSERT_EQ_INT(1, ctx.tm_counter); /* counter always increments */
+
 	ASSERT_EQ_INT(PUS_STATUS_OK,
 		pus_service_1_emit_failure(&ctx, &tc,
 			PUS_SUBTYPE_VERIFICATION_ROUTING_FAILURE, 0u));
+	ASSERT_EQ_INT(2, ctx.tm_counter);
 
 	return 0;
 }
