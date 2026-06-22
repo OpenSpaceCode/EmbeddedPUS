@@ -1,29 +1,15 @@
 #include "cunit.h"
 #include "test_runners.h"
+#include "test_helpers.h"
 #include "pus_service_20.h"
 #include "pus_context.h"
 #include "pus_handler.h"
 #include "pus_services.h"
 #include <string.h>
 
-static uint8_t  g_buf[512];
-static uint16_t g_len = 0;
-
-static pus_status_t test_sink(void *ud, const uint8_t *data, uint16_t len)
-{
-	(void)ud;
-	memcpy(g_buf, data, len < sizeof(g_buf) ? len : sizeof(g_buf));
-	g_len = len;
-	return PUS_STATUS_OK;
-}
-
-static pus_context_t make_ctx(void)
-{
-	pus_context_t ctx;
-	pus_init(&ctx);
-	ctx.tm_sink = test_sink;
-	return ctx;
-}
+#define g_buf th_buf
+#define g_len th_len
+#define make_ctx th_make_ctx
 
 /* 4-byte big-endian parameter */
 static uint32_t g_param_val = 0xDEADBEEFu;
