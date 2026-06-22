@@ -109,7 +109,7 @@ static pus_status_t setter_batt_alert(uint16_t pid, const uint8_t *buf,
                                        uint16_t len, void *ud)
 {
     (void)pid; (void)len; (void)ud;
-    g_batt_alert_mv = (uint16_t)((uint16_t)(buf[0] << 8u) | buf[1]);
+    g_batt_alert_mv = (uint16_t)(((uint16_t)buf[0] << 8u) | (uint16_t)buf[1]);
     return PUS_STATUS_OK;
 }
 
