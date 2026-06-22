@@ -1,5 +1,5 @@
 CC ?= cc
-CFLAGS ?= -O2 -std=c11 \
+CFLAGS ?= -O2 -std=c99 \
           -Iinclude -Itests \
           -Wall -Wextra -Wpedantic -Wconversion -Wshadow \
           -Wcast-align -Wcast-qual -Wpointer-arith -Wformat=2 \
