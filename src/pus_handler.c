@@ -8,8 +8,21 @@ pus_status_t pus_handler_register(
 	pus_tc_handler_t  handler,
 	void             *user_data)
 {
-	if (ctx == NULL || handler == NULL) {
+	if (ctx == NULL) {
 		return PUS_STATUS_NULL;
+	}
+
+	/* NULL handler means deregister: find and clear the existing entry. */
+	if (handler == NULL) {
+		for (uint16_t i = 0u; i < PUS_MAX_TC_HANDLERS; i++) {
+			if (ctx->handler_table[i].is_used &&
+			    ctx->handler_table[i].service == service &&
+			    ctx->handler_table[i].subtype == subtype) {
+				ctx->handler_table[i].is_used = 0u;
+				return PUS_STATUS_OK;
+			}
+		}
+		return PUS_STATUS_NO_HANDLER;
 	}
 
 	for (uint16_t i = 0u; i < PUS_MAX_TC_HANDLERS; i++) {

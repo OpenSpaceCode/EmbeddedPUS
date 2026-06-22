@@ -101,7 +101,6 @@ static int test_null_context(void)
 	ASSERT_EQ_INT(PUS_STATUS_NULL,
 		pus_handler_register(NULL, 1u, 1u, dummy_handler, NULL));
 	ASSERT_EQ_INT(-1, pus_handler_find(NULL, 1u, 1u));
-
 	return 0;
 }
 

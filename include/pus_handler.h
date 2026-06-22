@@ -7,13 +7,19 @@
  * @brief Register or update a TC handler for a (service, subtype) pair.
  * If the pair is already registered, the handler and user_data are replaced.
  *
+ * Passing NULL for @p handler deregisters the entry for that (service, subtype)
+ * pair. If no entry is found for that pair, PUS_STATUS_NO_HANDLER is returned.
+ *
  * @param[in,out] ctx       Active PUS context.
  * @param[in]     service   Service type identifier.
  * @param[in]     subtype   Service subtype identifier.
- * @param[in]     handler   Callback invoked when a matching TC is received.
- * @param[in]     user_data Opaque pointer forwarded to the handler.
+ * @param[in]     handler   Callback to register, or NULL to deregister.
+ * @param[in]     user_data Opaque pointer forwarded to the handler (ignored when deregistering).
  *
- * @return PUS_STATUS_NULL, PUS_STATUS_TABLE_FULL, or PUS_STATUS_OK.
+ * @return PUS_STATUS_NULL if ctx is NULL.
+ * @return PUS_STATUS_NO_HANDLER if handler is NULL and no matching entry exists.
+ * @return PUS_STATUS_TABLE_FULL if the table is full and no matching entry exists.
+ * @return PUS_STATUS_OK on success.
  */
 pus_status_t pus_handler_register(
 	pus_context_t    *ctx,
