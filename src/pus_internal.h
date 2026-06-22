@@ -1,6 +1,7 @@
 #ifndef PUS_INTERNAL_H
 #define PUS_INTERNAL_H
 
+#include <stddef.h>
 #include "pus_config.h"
 #include "pus_context.h"
 #include "pus_types.h"
@@ -27,5 +28,14 @@ static inline void pus_tm_hdr_fill(
 	                        ? ctx->time_source(ctx->time_source_user_data) : 0u;
 	hdr->spare            = 0u;
 }
+
+/*
+ * Returns the table index of the handler for (service, subtype), or -1 if
+ * not found.  Internal use only — callers must not store or expose the index.
+ */
+int pus_handler_find(
+	const pus_context_t *ctx,
+	pus_service_t        service,
+	pus_subtype_t        subtype);
 
 #endif /* PUS_INTERNAL_H */

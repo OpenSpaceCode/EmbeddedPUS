@@ -29,17 +29,24 @@ pus_status_t pus_handler_register(
 	void             *user_data);
 
 /**
- * @brief Return the handler table index for a (service, subtype) pair.
+ * @brief Invoke the registered handler for a (service, subtype) pair.
  *
- * @param[in] ctx     Active PUS context.
- * @param[in] service Service type identifier.
- * @param[in] subtype Service subtype identifier.
+ * Calls the handler with @p ctx and @p tc, passing through the stored
+ * user_data.
  *
- * @return Table index (>= 0) if found, -1 if not registered.
+ * @param[in,out] ctx     Active PUS context.
+ * @param[in]     service Service type identifier.
+ * @param[in]     subtype Service subtype identifier.
+ * @param[in]     tc      TC packet to pass to the handler.
+ *
+ * @return PUS_STATUS_NULL if ctx or tc is NULL.
+ * @return PUS_STATUS_NO_HANDLER if no handler is registered for the pair.
+ * @return Whatever the handler returns otherwise.
  */
-int pus_handler_find(
-	const pus_context_t *ctx,
-	pus_service_t        service,
-	pus_subtype_t        subtype);
+pus_status_t pus_handler_invoke(
+	pus_context_t         *ctx,
+	pus_service_t          service,
+	pus_subtype_t          subtype,
+	const pus_tc_packet_t *tc);
 
 #endif /* PUS_HANDLER_H */

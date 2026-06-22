@@ -106,10 +106,6 @@ static int test_set_values_tc(void)
 	ASSERT_EQ_INT(PUS_STATUS_OK,
 		pus_service_20_register_handlers(&ctx, &s20));
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
-		PUS_SUBTYPE_PARAMETER_SET_VALUES);
-	ASSERT_TRUE(idx >= 0);
-
 	/* TC[20,3] payload: N=1, PID=0x0010, value=0xCAFEBABE */
 	const uint8_t payload[] = {
 		0x01u,
@@ -123,8 +119,8 @@ static int test_set_values_tc(void)
 
 	g_param_val = 0u;
 	ASSERT_EQ_INT(PUS_STATUS_OK,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+			PUS_SUBTYPE_PARAMETER_SET_VALUES, &tc));
 	ASSERT_EQ_INT((int)0xCAFEBABEu, (int)g_param_val);
 
 	return 0;
@@ -140,10 +136,6 @@ static int test_readonly_param_returns_failed(void)
 		param_getter, NULL, NULL);
 	pus_service_20_register_handlers(&ctx, &s20);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
-		PUS_SUBTYPE_PARAMETER_SET_VALUES);
-	ASSERT_TRUE(idx >= 0);
-
 	const uint8_t payload[] = { 0x01u, 0x00u, 0x20u, 0x00u, 0x00u, 0x00u, 0x01u };
 	pus_tc_packet_t tc;
 	memset(&tc, 0, sizeof(tc));
@@ -151,8 +143,8 @@ static int test_readonly_param_returns_failed(void)
 	tc.payload_len = sizeof(payload);
 
 	ASSERT_EQ_INT(PUS_STATUS_HANDLER_FAILED,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+			PUS_SUBTYPE_PARAMETER_SET_VALUES, &tc));
 
 	return 0;
 }
@@ -292,10 +284,6 @@ static int test_tc_20_1_success(void)
 	pus_service_20_register_param(&s20, 0x0001u, 4u, param_getter, NULL, NULL);
 	pus_service_20_register_handlers(&ctx, &s20);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
-		PUS_SUBTYPE_PARAMETER_REPORT_VALUES);
-	ASSERT_TRUE(idx >= 0);
-
 	/* payload: N=1, PID=0x0001 */
 	const uint8_t payload[] = { 0x01u, 0x00u, 0x01u };
 	pus_tc_packet_t tc;
@@ -304,8 +292,8 @@ static int test_tc_20_1_success(void)
 	tc.payload_len = sizeof(payload);
 
 	ASSERT_EQ_INT(PUS_STATUS_OK,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+			PUS_SUBTYPE_PARAMETER_REPORT_VALUES, &tc));
 	return 0;
 }
 
@@ -316,17 +304,13 @@ static int test_tc_20_1_bad_length(void)
 	pus_service_20_init(&s20);
 	pus_service_20_register_handlers(&ctx, &s20);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
-		PUS_SUBTYPE_PARAMETER_REPORT_VALUES);
-	ASSERT_TRUE(idx >= 0);
-
 	pus_tc_packet_t tc;
 	memset(&tc, 0, sizeof(tc));
 	tc.payload     = NULL;
 	tc.payload_len = 0u;
 	ASSERT_EQ_INT(PUS_STATUS_BAD_LENGTH,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+			PUS_SUBTYPE_PARAMETER_REPORT_VALUES, &tc));
 	return 0;
 }
 
@@ -337,18 +321,14 @@ static int test_tc_20_1_n_too_large(void)
 	pus_service_20_init(&s20);
 	pus_service_20_register_handlers(&ctx, &s20);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
-		PUS_SUBTYPE_PARAMETER_REPORT_VALUES);
-	ASSERT_TRUE(idx >= 0);
-
 	const uint8_t payload[] = { (uint8_t)(PUS_SERVICE_20_MAX_PARAMS + 1u) };
 	pus_tc_packet_t tc;
 	memset(&tc, 0, sizeof(tc));
 	tc.payload     = payload;
 	tc.payload_len = sizeof(payload);
 	ASSERT_EQ_INT(PUS_STATUS_BAD_LENGTH,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+			PUS_SUBTYPE_PARAMETER_REPORT_VALUES, &tc));
 	return 0;
 }
 
@@ -359,10 +339,6 @@ static int test_tc_20_1_payload_too_short(void)
 	pus_service_20_init(&s20);
 	pus_service_20_register_handlers(&ctx, &s20);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
-		PUS_SUBTYPE_PARAMETER_REPORT_VALUES);
-	ASSERT_TRUE(idx >= 0);
-
 	/* N=2 but only 2 bytes total — need 1+2*2=5 */
 	const uint8_t payload[] = { 0x02u, 0x00u };
 	pus_tc_packet_t tc;
@@ -370,8 +346,8 @@ static int test_tc_20_1_payload_too_short(void)
 	tc.payload     = payload;
 	tc.payload_len = sizeof(payload);
 	ASSERT_EQ_INT(PUS_STATUS_BAD_LENGTH,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+			PUS_SUBTYPE_PARAMETER_REPORT_VALUES, &tc));
 	return 0;
 }
 
@@ -384,17 +360,13 @@ static int test_tc_20_3_bad_length(void)
 	pus_service_20_init(&s20);
 	pus_service_20_register_handlers(&ctx, &s20);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
-		PUS_SUBTYPE_PARAMETER_SET_VALUES);
-	ASSERT_TRUE(idx >= 0);
-
 	pus_tc_packet_t tc;
 	memset(&tc, 0, sizeof(tc));
 	tc.payload     = NULL;
 	tc.payload_len = 0u;
 	ASSERT_EQ_INT(PUS_STATUS_BAD_LENGTH,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+			PUS_SUBTYPE_PARAMETER_SET_VALUES, &tc));
 	return 0;
 }
 
@@ -405,10 +377,6 @@ static int test_tc_20_3_truncated_pid(void)
 	pus_service_20_init(&s20);
 	pus_service_20_register_handlers(&ctx, &s20);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
-		PUS_SUBTYPE_PARAMETER_SET_VALUES);
-	ASSERT_TRUE(idx >= 0);
-
 	/* N=1 but only 2 bytes (N + 1 PID byte) — need N + PID(2) = 3 */
 	const uint8_t payload[] = { 0x01u, 0x00u };
 	pus_tc_packet_t tc;
@@ -416,8 +384,8 @@ static int test_tc_20_3_truncated_pid(void)
 	tc.payload     = payload;
 	tc.payload_len = sizeof(payload);
 	ASSERT_EQ_INT(PUS_STATUS_BAD_LENGTH,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+			PUS_SUBTYPE_PARAMETER_SET_VALUES, &tc));
 	return 0;
 }
 
@@ -428,18 +396,14 @@ static int test_tc_20_3_unknown_pid(void)
 	pus_service_20_init(&s20);
 	pus_service_20_register_handlers(&ctx, &s20);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
-		PUS_SUBTYPE_PARAMETER_SET_VALUES);
-	ASSERT_TRUE(idx >= 0);
-
 	const uint8_t payload[] = { 0x01u, 0xFFu, 0xFFu }; /* PID=0xFFFF not registered */
 	pus_tc_packet_t tc;
 	memset(&tc, 0, sizeof(tc));
 	tc.payload     = payload;
 	tc.payload_len = sizeof(payload);
 	ASSERT_EQ_INT(PUS_STATUS_NO_HANDLER,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+			PUS_SUBTYPE_PARAMETER_SET_VALUES, &tc));
 	return 0;
 }
 
@@ -451,10 +415,6 @@ static int test_tc_20_3_truncated_value(void)
 	pus_service_20_register_param(&s20, 0x0010u, 4u, param_getter, param_setter, NULL);
 	pus_service_20_register_handlers(&ctx, &s20);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
-		PUS_SUBTYPE_PARAMETER_SET_VALUES);
-	ASSERT_TRUE(idx >= 0);
-
 	/* N=1, PID=0x0010, only 3 value bytes instead of required 4 */
 	const uint8_t payload[] = { 0x01u, 0x00u, 0x10u, 0x01u, 0x02u, 0x03u };
 	pus_tc_packet_t tc;
@@ -462,8 +422,8 @@ static int test_tc_20_3_truncated_value(void)
 	tc.payload     = payload;
 	tc.payload_len = sizeof(payload);
 	ASSERT_EQ_INT(PUS_STATUS_BAD_LENGTH,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+			PUS_SUBTYPE_PARAMETER_SET_VALUES, &tc));
 	return 0;
 }
 
@@ -476,18 +436,14 @@ static int test_tc_20_3_setter_failure(void)
 		param_getter, failing_setter, NULL);
 	pus_service_20_register_handlers(&ctx, &s20);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
-		PUS_SUBTYPE_PARAMETER_SET_VALUES);
-	ASSERT_TRUE(idx >= 0);
-
 	const uint8_t payload[] = { 0x01u, 0x00u, 0x10u, 0xCAu, 0xFEu, 0xBAu, 0xBEu };
 	pus_tc_packet_t tc;
 	memset(&tc, 0, sizeof(tc));
 	tc.payload     = payload;
 	tc.payload_len = sizeof(payload);
 	ASSERT_EQ_INT(PUS_STATUS_HANDLER_FAILED,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+			PUS_SUBTYPE_PARAMETER_SET_VALUES, &tc));
 	return 0;
 }
 

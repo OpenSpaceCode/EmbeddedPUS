@@ -53,18 +53,14 @@ static int test_handler_17_1_responds(void)
 	ASSERT_EQ_INT(PUS_STATUS_OK,
 		pus_service_17_register_handlers(&ctx));
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_TEST,
-		PUS_SUBTYPE_TEST_ARE_YOU_ALIVE);
-	ASSERT_TRUE(idx >= 0);
-
 	pus_tc_packet_t tc;
 	memset(&tc, 0, sizeof(tc));
 	tc.sec_header.source_id = 0x0099u;
 	g_len = 0;
 
 	ASSERT_EQ_INT(PUS_STATUS_OK,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_TEST,
+			PUS_SUBTYPE_TEST_ARE_YOU_ALIVE, &tc));
 
 	/* handler must emit TM[17,2] back to TC source */
 	ASSERT_EQ_INT(PUS_TM_SEC_HEADER_LEN, g_len);
@@ -80,10 +76,6 @@ static int test_handler_17_3_echoes_apid(void)
 	pus_context_t ctx = make_ctx();
 	pus_service_17_register_handlers(&ctx);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_TEST,
-		PUS_SUBTYPE_TEST_ON_BOARD_CONNECTION);
-	ASSERT_TRUE(idx >= 0);
-
 	const uint8_t payload[] = { 0x04u, 0x2Au }; /* APID = 0x042A */
 	pus_tc_packet_t tc;
 	memset(&tc, 0, sizeof(tc));
@@ -93,8 +85,8 @@ static int test_handler_17_3_echoes_apid(void)
 	g_len = 0;
 
 	ASSERT_EQ_INT(PUS_STATUS_OK,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_TEST,
+			PUS_SUBTYPE_TEST_ON_BOARD_CONNECTION, &tc));
 
 	ASSERT_EQ_INT(PUS_TM_SEC_HEADER_LEN + 2, g_len);
 	ASSERT_EQ_INT(PUS_SUBTYPE_TEST_ON_BOARD_CONNECTION_REPORT, g_buf[2]);
@@ -109,18 +101,14 @@ static int test_handler_17_3_bad_length(void)
 	pus_context_t ctx = make_ctx();
 	pus_service_17_register_handlers(&ctx);
 
-	int idx = pus_handler_find(&ctx, PUS_SERVICE_TEST,
-		PUS_SUBTYPE_TEST_ON_BOARD_CONNECTION);
-	ASSERT_TRUE(idx >= 0);
-
 	pus_tc_packet_t tc;
 	memset(&tc, 0, sizeof(tc));
 	tc.payload     = NULL;
 	tc.payload_len = 1u; /* too short */
 
 	ASSERT_EQ_INT(PUS_STATUS_BAD_LENGTH,
-		ctx.handler_table[idx].handler(&ctx, &tc,
-			ctx.handler_table[idx].user_data));
+		pus_handler_invoke(&ctx, PUS_SERVICE_TEST,
+			PUS_SUBTYPE_TEST_ON_BOARD_CONNECTION, &tc));
 
 	return 0;
 }

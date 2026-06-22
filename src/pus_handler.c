@@ -1,4 +1,5 @@
 #include "pus_handler.h"
+#include "pus_internal.h"
 #include <stddef.h>
 
 pus_status_t pus_handler_register(
@@ -69,4 +70,25 @@ int pus_handler_find(
 	}
 
 	return -1;
+}
+
+pus_status_t pus_handler_invoke(
+	pus_context_t         *ctx,
+	pus_service_t          service,
+	pus_subtype_t          subtype,
+	const pus_tc_packet_t *tc)
+{
+	int idx;
+
+	if (ctx == NULL || tc == NULL) {
+		return PUS_STATUS_NULL;
+	}
+
+	idx = pus_handler_find(ctx, service, subtype);
+	if (idx < 0) {
+		return PUS_STATUS_NO_HANDLER;
+	}
+
+	return ctx->handler_table[idx].handler(ctx, tc,
+	                                       ctx->handler_table[idx].user_data);
 }

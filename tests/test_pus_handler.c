@@ -16,17 +16,25 @@ static pus_status_t other_handler(pus_context_t *ctx, const pus_tc_packet_t *tc,
 	return PUS_STATUS_HANDLER_FAILED;
 }
 
+static pus_tc_packet_t make_tc(void)
+{
+	pus_tc_packet_t tc;
+	memset(&tc, 0, sizeof(tc));
+	return tc;
+}
+
 static int test_register_and_find(void)
 {
 	pus_context_t ctx;
 	pus_init(&ctx);
+	pus_tc_packet_t tc = make_tc();
 
 	ASSERT_EQ_INT(PUS_STATUS_OK,
 		pus_handler_register(&ctx, 17u, 1u, dummy_handler, NULL));
 
-	int idx = pus_handler_find(&ctx, 17u, 1u);
-	ASSERT_TRUE(idx >= 0);
-	ASSERT_TRUE(ctx.handler_table[idx].handler == dummy_handler);
+	/* Invocation returns whatever dummy_handler returns (OK) */
+	ASSERT_EQ_INT(PUS_STATUS_OK,
+		pus_handler_invoke(&ctx, 17u, 1u, &tc));
 
 	return 0;
 }
@@ -35,8 +43,10 @@ static int test_not_found(void)
 {
 	pus_context_t ctx;
 	pus_init(&ctx);
+	pus_tc_packet_t tc = make_tc();
 
-	ASSERT_EQ_INT(-1, pus_handler_find(&ctx, 17u, 1u));
+	ASSERT_EQ_INT(PUS_STATUS_NO_HANDLER,
+		pus_handler_invoke(&ctx, 17u, 1u, &tc));
 
 	return 0;
 }
@@ -45,15 +55,17 @@ static int test_update_on_duplicate(void)
 {
 	pus_context_t ctx;
 	pus_init(&ctx);
+	pus_tc_packet_t tc = make_tc();
 
 	pus_handler_register(&ctx, 17u, 1u, dummy_handler, NULL);
 	ASSERT_EQ_INT(PUS_STATUS_OK,
 		pus_handler_register(&ctx, 17u, 1u, other_handler, NULL));
 
-	int idx = pus_handler_find(&ctx, 17u, 1u);
-	ASSERT_TRUE(idx >= 0);
-	ASSERT_TRUE(ctx.handler_table[idx].handler == other_handler);
-	/* update must not add a new slot — verify by counting is_used entries */
+	/* After update, other_handler (returns HANDLER_FAILED) must be active */
+	ASSERT_EQ_INT(PUS_STATUS_HANDLER_FAILED,
+		pus_handler_invoke(&ctx, 17u, 1u, &tc));
+
+	/* Update must not add a new slot — verify by counting is_used entries */
 	int used = 0;
 	for (uint16_t i = 0u; i < PUS_MAX_TC_HANDLERS; i++) {
 		if (ctx.handler_table[i].is_used) used++;
@@ -67,15 +79,17 @@ static int test_multiple_services(void)
 {
 	pus_context_t ctx;
 	pus_init(&ctx);
+	pus_tc_packet_t tc = make_tc();
 
 	pus_handler_register(&ctx, 17u,  1u, dummy_handler, NULL);
 	pus_handler_register(&ctx, 17u,  3u, dummy_handler, NULL);
 	pus_handler_register(&ctx, 20u,  1u, dummy_handler, NULL);
 
-	ASSERT_TRUE(pus_handler_find(&ctx, 17u, 1u) >= 0);
-	ASSERT_TRUE(pus_handler_find(&ctx, 17u, 3u) >= 0);
-	ASSERT_TRUE(pus_handler_find(&ctx, 20u, 1u) >= 0);
-	ASSERT_EQ_INT(-1, pus_handler_find(&ctx, 20u, 3u));
+	ASSERT_TRUE(pus_handler_invoke(&ctx, 17u, 1u, &tc) != PUS_STATUS_NO_HANDLER);
+	ASSERT_TRUE(pus_handler_invoke(&ctx, 17u, 3u, &tc) != PUS_STATUS_NO_HANDLER);
+	ASSERT_TRUE(pus_handler_invoke(&ctx, 20u, 1u, &tc) != PUS_STATUS_NO_HANDLER);
+	ASSERT_EQ_INT(PUS_STATUS_NO_HANDLER,
+		pus_handler_invoke(&ctx, 20u, 3u, &tc));
 
 	return 0;
 }
@@ -98,9 +112,13 @@ static int test_table_full(void)
 
 static int test_null_context(void)
 {
+	pus_tc_packet_t tc = make_tc();
+
 	ASSERT_EQ_INT(PUS_STATUS_NULL,
 		pus_handler_register(NULL, 1u, 1u, dummy_handler, NULL));
-	ASSERT_EQ_INT(-1, pus_handler_find(NULL, 1u, 1u));
+	ASSERT_EQ_INT(PUS_STATUS_NULL,
+		pus_handler_invoke(NULL, 1u, 1u, &tc));
+
 	return 0;
 }
 
@@ -108,6 +126,7 @@ static int test_deregister_with_null_handler(void)
 {
 	pus_context_t ctx;
 	pus_init(&ctx);
+	pus_tc_packet_t tc = make_tc();
 
 	/* Deregistering when nothing is registered returns NO_HANDLER */
 	ASSERT_EQ_INT(PUS_STATUS_NO_HANDLER,
@@ -119,13 +138,15 @@ static int test_deregister_with_null_handler(void)
 	ASSERT_EQ_INT(PUS_STATUS_OK,
 		pus_handler_register(&ctx, 17u, 1u, NULL, NULL));
 
-	/* Slot must be free: find should return -1 */
-	ASSERT_EQ_INT(-1, pus_handler_find(&ctx, 17u, 1u));
+	/* Slot must be free */
+	ASSERT_EQ_INT(PUS_STATUS_NO_HANDLER,
+		pus_handler_invoke(&ctx, 17u, 1u, &tc));
 
 	/* Freed slot can be reused */
 	ASSERT_EQ_INT(PUS_STATUS_OK,
 		pus_handler_register(&ctx, 17u, 1u, dummy_handler, NULL));
-	ASSERT_TRUE(pus_handler_find(&ctx, 17u, 1u) >= 0);
+	ASSERT_EQ_INT(PUS_STATUS_OK,
+		pus_handler_invoke(&ctx, 17u, 1u, &tc));
 
 	return 0;
 }
