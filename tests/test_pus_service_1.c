@@ -1,29 +1,15 @@
 #include "cunit.h"
 #include "test_runners.h"
+#include "test_helpers.h"
 #include "pus_service_1.h"
 #include "pus_context.h"
 #include "pus_services.h"
 #include "pus_codec.h"
 #include <string.h>
 
-static uint8_t  g_buf[64];
-static uint16_t g_len = 0;
-
-static pus_status_t test_sink(void *ud, const uint8_t *data, uint16_t len)
-{
-	(void)ud;
-	memcpy(g_buf, data, len < sizeof(g_buf) ? len : sizeof(g_buf));
-	g_len = len;
-	return PUS_STATUS_OK;
-}
-
-static pus_context_t make_ctx(void)
-{
-	pus_context_t ctx;
-	pus_init(&ctx);
-	ctx.tm_sink = test_sink;
-	return ctx;
-}
+#define g_buf th_buf
+#define g_len th_len
+#define make_ctx th_make_ctx
 
 static pus_tc_packet_t make_tc(uint8_t svc, uint8_t sub, uint16_t src)
 {
@@ -131,9 +117,12 @@ static int test_emit_no_sink_ok(void)
 	ASSERT_EQ_INT(PUS_STATUS_OK,
 		pus_service_1_emit_success(&ctx, &tc,
 			PUS_SUBTYPE_VERIFICATION_ACCEPTANCE_SUCCESS));
+	ASSERT_EQ_INT(1, ctx.tm_counter); /* counter always increments */
+
 	ASSERT_EQ_INT(PUS_STATUS_OK,
 		pus_service_1_emit_failure(&ctx, &tc,
 			PUS_SUBTYPE_VERIFICATION_ROUTING_FAILURE, 0u));
+	ASSERT_EQ_INT(2, ctx.tm_counter);
 
 	return 0;
 }

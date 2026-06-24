@@ -2,6 +2,7 @@
 #include "pus_service_1.h"
 #include "pus_services.h"
 #include "pus_codec.h"
+#include "pus_internal.h"
 #include <stddef.h>
 
 /*
@@ -91,27 +92,22 @@ pus_status_t pus_service_1_emit_success(
 	const pus_tc_packet_t *tc,
 	pus_subtype_t          subtype)
 {
-	uint8_t  payload[SUCCESS_PAYLOAD_LEN];
 	uint8_t  out[REPORT_BUF_LEN];
 	uint16_t out_len;
-	uint16_t source_id;
+	pus_status_t st;
 
 	if (ctx == NULL || tc == NULL) {
 		return PUS_STATUS_NULL;
 	}
-	if (ctx->tm_sink == NULL) {
-		return PUS_STATUS_OK;
+	st = pus_service_1_build_success(ctx, tc, subtype,
+	                                 out, sizeof(out), &out_len);
+	if (st != PUS_STATUS_OK) {
+		return st;
 	}
-
-	source_id  = tc->sec_header.source_id;
-	payload[0] = tc->sec_header.service_type_id;
-	payload[1] = tc->sec_header.subtype_id;
-	payload[2] = (uint8_t)(source_id >> 8u);
-	payload[3] = (uint8_t)(source_id & 0xFFu);
-
-	return pus_tm_build(ctx, PUS_SERVICE_REQUEST_VERIFICATION, subtype,
-	                    source_id, payload, SUCCESS_PAYLOAD_LEN,
-	                    out, sizeof(out), &out_len);
+	if (ctx->tm_sink != NULL) {
+		return ctx->tm_sink(ctx->tm_sink_user_data, out, out_len);
+	}
+	return PUS_STATUS_OK;
 }
 
 pus_status_t pus_service_1_emit_failure(
@@ -120,27 +116,20 @@ pus_status_t pus_service_1_emit_failure(
 	pus_subtype_t          subtype,
 	uint16_t               failure_code)
 {
-	uint8_t  payload[FAILURE_PAYLOAD_LEN];
 	uint8_t  out[REPORT_BUF_LEN];
 	uint16_t out_len;
-	uint16_t source_id;
+	pus_status_t st;
 
 	if (ctx == NULL || tc == NULL) {
 		return PUS_STATUS_NULL;
 	}
-	if (ctx->tm_sink == NULL) {
-		return PUS_STATUS_OK;
+	st = pus_service_1_build_failure(ctx, tc, subtype, failure_code,
+	                                 out, sizeof(out), &out_len);
+	if (st != PUS_STATUS_OK) {
+		return st;
 	}
-
-	source_id  = tc->sec_header.source_id;
-	payload[0] = tc->sec_header.service_type_id;
-	payload[1] = tc->sec_header.subtype_id;
-	payload[2] = (uint8_t)(source_id >> 8u);
-	payload[3] = (uint8_t)(source_id & 0xFFu);
-	payload[4] = (uint8_t)(failure_code >> 8u);
-	payload[5] = (uint8_t)(failure_code & 0xFFu);
-
-	return pus_tm_build(ctx, PUS_SERVICE_REQUEST_VERIFICATION, subtype,
-	                    source_id, payload, FAILURE_PAYLOAD_LEN,
-	                    out, sizeof(out), &out_len);
+	if (ctx->tm_sink != NULL) {
+		return ctx->tm_sink(ctx->tm_sink_user_data, out, out_len);
+	}
+	return PUS_STATUS_OK;
 }

@@ -25,7 +25,11 @@ pus_status_t pus_tc_decode(
 
 /**
  * @brief Decode, route, and process a raw TC buffer.
- * Emits ST[01] verification reports according to the TC ack_flags.
+ *
+ * Automatically emits ST[01] verification reports for the acceptance, start,
+ * and completion ACK flags.  Progress reports (PUS_ACK_PROGRESS) are NOT
+ * emitted automatically — handlers that need them must call
+ * pus_service_1_emit_success() / pus_service_1_emit_failure() directly.
  * Unrecognised commands receive a TM[1,10] routing failure report.
  *
  * @param[in,out] ctx  Active PUS context.

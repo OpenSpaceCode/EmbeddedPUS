@@ -11,7 +11,7 @@ Minimal ECSS Packet Utilisation Standard (PUS) implementation in C, designed for
 
 | Service | Name | Subtypes |
 |---------|------|----------|
-| ST[01] | Request Verification | Acceptance, Start, Progress, Completion (success & failure), Routing failure |
+| ST[01] | Request Verification | Acceptance, Start, Completion (success & failure), Routing failure; Progress reports must be emitted manually by the handler |
 | ST[03] | Housekeeping | TM[3,25] HK report, TM[3,26] diagnostic report |
 | ST[05] | Event Reporting | Info, Low/Medium/High severity |
 | ST[17] | Test | TC[17,1] are-you-alive, TC[17,3] on-board connection test |
@@ -115,10 +115,10 @@ void app_on_tc_received(const uint8_t *raw, uint16_t len)
 void app_periodic(void)
 {
     /* 7. Emit periodic housekeeping */
-    pus_service_3_emit_hk(&g_pus, &g_s3, 0x0001);
+    pus_service_3_emit_hk(&g_pus, &g_s3, 0x0001u);
 
     /* 8. Emit an event */
-    pus_service_5_emit(&g_pus, PUS_SUBTYPE_EVENT_INFO, 0x0101, NULL, 0);
+    pus_service_5_emit(&g_pus, PUS_SUBTYPE_EVENT_INFO, 0x0101u, NULL, 0u);
 }
 ```
 

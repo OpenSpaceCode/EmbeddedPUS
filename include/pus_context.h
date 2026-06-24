@@ -69,7 +69,10 @@ typedef struct {
 
 /**
  * @brief Runtime state for one EmbeddedPUS instance.
- * Allocate statically or on the stack; do not share across threads without a mutex.
+ * Allocate statically or on the stack.
+ * @warning Not thread-safe. If the context is accessed from more than one task
+ *          or interrupt, all calls must be serialised with a mutex or critical
+ *          section.
  */
 struct pus_context {
 	pus_handler_entry_t  handler_table[PUS_MAX_TC_HANDLERS]; /**< TC dispatch table. */

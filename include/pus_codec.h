@@ -5,36 +5,6 @@
 #include <stdint.h>
 #include "pus_config.h"
 #include "pus_types.h"
-#include "pus_context.h"
-
-/**
- * @brief Populate a TM secondary header with fields common to every outgoing packet.
- * @note  msg_type_counter is read from ctx->tm_counter but NOT incremented here;
- *        callers must increment after all error paths are cleared.
- *
- * @param[in]  ctx     Active PUS context (provides counter and time source).
- * @param[out] hdr     Header struct to fill.
- * @param[in]  service Service type identifier.
- * @param[in]  subtype Service subtype identifier.
- * @param[in]  dest_id Destination APID.
- */
-static inline void pus_tm_hdr_fill(
-	pus_context_t       *ctx,
-	pus_tm_sec_header_t *hdr,
-	pus_service_t        service,
-	pus_subtype_t        subtype,
-	uint16_t             dest_id)
-{
-	hdr->version          = PUS_VERSION;
-	hdr->time_ref_status  = 0u;
-	hdr->service_type_id  = service;
-	hdr->subtype_id       = subtype;
-	hdr->msg_type_counter = ctx->tm_counter;
-	hdr->destination_id   = dest_id;
-	hdr->time             = (ctx->time_source != NULL)
-	                        ? ctx->time_source(ctx->time_source_user_data) : 0u;
-	hdr->spare            = 0u;
-}
 
 /**
  * @brief Decode a raw TC secondary header from a byte buffer.

@@ -1,3 +1,4 @@
+#include "pus.h"
 #include "pus_service_20.h"
 #include "pus_services.h"
 #include "pus_codec.h"
@@ -38,31 +39,32 @@ pus_status_t pus_service_20_register_param(
 		return PUS_STATUS_NULL;
 	}
 
-	/* Update existing entry */
-	for (uint8_t i = 0u; i < PUS_SERVICE_20_MAX_PARAMS; i++) {
-		if (s20->params[i].is_used && s20->params[i].param_id == param_id) {
-			s20->params[i].value_len  = value_len;
-			s20->params[i].getter     = getter;
-			s20->params[i].setter     = setter;
-			s20->params[i].user_data  = user_data;
-			return PUS_STATUS_OK;
+	{
+		int32_t first_free = -1;
+		for (uint8_t i = 0u; i < PUS_SERVICE_20_MAX_PARAMS; i++) {
+			if (s20->params[i].is_used) {
+				if (s20->params[i].param_id == param_id) {
+					s20->params[i].value_len = value_len;
+					s20->params[i].getter    = getter;
+					s20->params[i].setter    = setter;
+					s20->params[i].user_data = user_data;
+					return PUS_STATUS_OK;
+				}
+			} else if (first_free < 0) {
+				first_free = (int32_t)i;
+			}
 		}
-	}
-
-	/* Find free slot */
-	for (uint8_t i = 0u; i < PUS_SERVICE_20_MAX_PARAMS; i++) {
-		if (!s20->params[i].is_used) {
-			s20->params[i].param_id   = param_id;
-			s20->params[i].value_len  = value_len;
-			s20->params[i].getter     = getter;
-			s20->params[i].setter     = setter;
-			s20->params[i].user_data  = user_data;
-			s20->params[i].is_used    = 1u;
-			return PUS_STATUS_OK;
+		if (first_free < 0) {
+			return PUS_STATUS_TABLE_FULL;
 		}
+		s20->params[first_free].param_id  = param_id;
+		s20->params[first_free].value_len = value_len;
+		s20->params[first_free].getter    = getter;
+		s20->params[first_free].setter    = setter;
+		s20->params[first_free].user_data = user_data;
+		s20->params[first_free].is_used   = 1u;
+		return PUS_STATUS_OK;
 	}
-
-	return PUS_STATUS_TABLE_FULL;
 }
 
 pus_status_t pus_service_20_emit_report(
@@ -71,27 +73,18 @@ pus_status_t pus_service_20_emit_report(
 	const uint16_t       *param_ids,
 	uint8_t               count)
 {
-	pus_status_t        st;
-	pus_tm_sec_header_t hdr;
-	uint8_t             out[MAX_OUT_LEN];
-	uint16_t            hdr_len;
-	uint16_t            off;
+	pus_status_t st;
+	uint8_t      payload[PUS_MAX_TM_PAYLOAD_LEN];
+	uint8_t      out[MAX_OUT_LEN];
+	uint16_t     out_len;
+	uint16_t     off = 0u;
 
 	if (ctx == NULL || s20 == NULL || param_ids == NULL) {
 		return PUS_STATUS_NULL;
 	}
 
-	/* Fill header fields but do NOT increment ctx->tm_counter yet — any error
-	 * below must not consume a sequence number. */
-	pus_tm_hdr_fill(ctx, &hdr, PUS_SERVICE_PARAMETER_MANAGEMENT,
-	                PUS_SUBTYPE_PARAMETER_VALUE_REPORT,
-	                ctx->default_destination_id);
-
-	(void)pus_tm_sec_header_encode(&hdr, out, sizeof(out), &hdr_len);
-
 	/* Payload: N (1 byte) + N × [PID (2) + value (value_len)] */
-	off = hdr_len;
-	out[off++] = count;
+	payload[off++] = count;
 
 	for (uint8_t i = 0u; i < count; i++) {
 		int idx = find_param(s20, param_ids[i]);
@@ -102,28 +95,26 @@ pus_status_t pus_service_20_emit_report(
 		uint16_t pid       = param_ids[i];
 		uint16_t value_len = s20->params[idx].value_len;
 
-		if ((uint16_t)(off + 2u + value_len) > (uint16_t)sizeof(out)) {
+		if ((uint16_t)(off + 2u + value_len) > (uint16_t)sizeof(payload)) {
 			return PUS_STATUS_BUFFER_TOO_SMALL;
 		}
 
-		out[off]      = (uint8_t)(pid >> 8u);
-		out[off + 1u] = (uint8_t)(pid & 0xFFu);
+		payload[off]      = (uint8_t)(pid >> 8u);
+		payload[off + 1u] = (uint8_t)(pid & 0xFFu);
 		off += 2u;
 
-		st = s20->params[idx].getter(pid, &out[off], value_len, s20->params[idx].user_data);
+		st = s20->params[idx].getter(pid, &payload[off], value_len, s20->params[idx].user_data);
 		if (st != PUS_STATUS_OK) {
 			return st;
 		}
 		off += value_len;
 	}
 
-	/* All params resolved successfully — now commit the counter. */
-	ctx->tm_counter++;
-
-	if (ctx->tm_sink == NULL) {
-		return PUS_STATUS_OK;
-	}
-	return ctx->tm_sink(ctx->tm_sink_user_data, out, off);
+	return pus_tm_build(ctx, PUS_SERVICE_PARAMETER_MANAGEMENT,
+	                    PUS_SUBTYPE_PARAMETER_VALUE_REPORT,
+	                    ctx->default_destination_id,
+	                    payload, off,
+	                    out, sizeof(out), &out_len);
 }
 
 static pus_status_t handle_tc_20_1(
