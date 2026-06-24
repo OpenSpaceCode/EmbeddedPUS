@@ -78,13 +78,11 @@ pus_status_t pus_handler_invoke(
 	pus_subtype_t          subtype,
 	const pus_tc_packet_t *tc)
 {
-	int idx;
-
 	if (ctx == NULL || tc == NULL) {
 		return PUS_STATUS_NULL;
 	}
 
-	idx = pus_handler_find(ctx, service, subtype);
+	int idx = pus_handler_find(ctx, service, subtype);
 	if (idx < 0) {
 		return PUS_STATUS_NO_HANDLER;
 	}
