@@ -1,9 +1,10 @@
 #ifndef PUS_SERVICE_17_H
 #define PUS_SERVICE_17_H
 
-#include <stdint.h>
 #include "pus_context.h"
 #include "pus_types.h"
+
+#include <stdint.h>
 
 /**
  * @brief Emit TM[17,2] are-you-alive report (ECSS §8.17.3.2).
@@ -14,9 +15,7 @@
  *
  * @return PUS_STATUS_NULL or PUS_STATUS_OK.
  */
-pus_status_t pus_service_17_emit_alive_report(
-	pus_context_t *ctx,
-	uint16_t       destination_id);
+pus_status_t pus_service_17_emit_alive_report(pus_context_t *ctx, uint16_t destination_id);
 
 /**
  * @brief Emit TM[17,4] on-board connection test report (ECSS §8.17.3.4).
@@ -28,10 +27,9 @@ pus_status_t pus_service_17_emit_alive_report(
  *
  * @return PUS_STATUS_NULL or PUS_STATUS_OK.
  */
-pus_status_t pus_service_17_emit_connection_report(
-	pus_context_t *ctx,
-	uint16_t       apid,
-	uint16_t       destination_id);
+pus_status_t pus_service_17_emit_connection_report(pus_context_t *ctx,
+                                                   uint16_t apid,
+                                                   uint16_t destination_id);
 
 /**
  * @brief Register TC[17,1] and TC[17,3] handlers with the PUS context.

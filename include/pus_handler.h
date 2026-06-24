@@ -21,12 +21,11 @@
  * @return PUS_STATUS_TABLE_FULL if the table is full and no matching entry exists.
  * @return PUS_STATUS_OK on success.
  */
-pus_status_t pus_handler_register(
-	pus_context_t    *ctx,
-	pus_service_t     service,
-	pus_subtype_t     subtype,
-	pus_tc_handler_t  handler,
-	void             *user_data);
+pus_status_t pus_handler_register(pus_context_t *ctx,
+                                  pus_service_t service,
+                                  pus_subtype_t subtype,
+                                  pus_tc_handler_t handler,
+                                  void *user_data);
 
 /**
  * @brief Invoke the registered handler for a (service, subtype) pair.
@@ -43,10 +42,9 @@ pus_status_t pus_handler_register(
  * @return PUS_STATUS_NO_HANDLER if no handler is registered for the pair.
  * @return Whatever the handler returns otherwise.
  */
-pus_status_t pus_handler_invoke(
-	pus_context_t         *ctx,
-	pus_service_t          service,
-	pus_subtype_t          subtype,
-	const pus_tc_packet_t *tc);
+pus_status_t pus_handler_invoke(pus_context_t *ctx,
+                                pus_service_t service,
+                                pus_subtype_t subtype,
+                                const pus_tc_packet_t *tc);
 
 #endif /* PUS_HANDLER_H */

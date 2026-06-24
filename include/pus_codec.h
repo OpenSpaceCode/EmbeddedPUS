@@ -1,10 +1,11 @@
 #ifndef PUS_CODEC_H
 #define PUS_CODEC_H
 
-#include <stddef.h>
-#include <stdint.h>
 #include "pus_config.h"
 #include "pus_types.h"
+
+#include <stddef.h>
+#include <stdint.h>
 
 /**
  * @brief Decode a raw TC secondary header from a byte buffer.
@@ -15,10 +16,9 @@
  *
  * @return PUS_STATUS_NULL, PUS_STATUS_BAD_LENGTH, PUS_STATUS_BAD_VERSION, or PUS_STATUS_OK.
  */
-pus_status_t pus_tc_sec_header_decode(
-	const uint8_t       *data,
-	uint16_t             len,
-	pus_tc_sec_header_t *header);
+pus_status_t pus_tc_sec_header_decode(const uint8_t *data,
+                                      uint16_t len,
+                                      pus_tc_sec_header_t *header);
 
 /**
  * @brief Encode a TC secondary header into a byte buffer.
@@ -30,11 +30,10 @@ pus_status_t pus_tc_sec_header_decode(
  *
  * @return PUS_STATUS_NULL, PUS_STATUS_BUFFER_TOO_SMALL, or PUS_STATUS_OK.
  */
-pus_status_t pus_tc_sec_header_encode(
-	const pus_tc_sec_header_t *header,
-	uint8_t                   *out,
-	uint16_t                   out_capacity,
-	uint16_t                  *out_len);
+pus_status_t pus_tc_sec_header_encode(const pus_tc_sec_header_t *header,
+                                      uint8_t *out,
+                                      uint16_t out_capacity,
+                                      uint16_t *out_len);
 
 /**
  * @brief Decode a raw TM secondary header from a byte buffer.
@@ -45,10 +44,9 @@ pus_status_t pus_tc_sec_header_encode(
  *
  * @return PUS_STATUS_NULL, PUS_STATUS_BAD_LENGTH, or PUS_STATUS_OK.
  */
-pus_status_t pus_tm_sec_header_decode(
-	const uint8_t       *data,
-	uint16_t             len,
-	pus_tm_sec_header_t *header);
+pus_status_t pus_tm_sec_header_decode(const uint8_t *data,
+                                      uint16_t len,
+                                      pus_tm_sec_header_t *header);
 
 /**
  * @brief Encode a TM secondary header into a byte buffer.
@@ -60,10 +58,9 @@ pus_status_t pus_tm_sec_header_decode(
  *
  * @return PUS_STATUS_NULL, PUS_STATUS_BUFFER_TOO_SMALL, or PUS_STATUS_OK.
  */
-pus_status_t pus_tm_sec_header_encode(
-	const pus_tm_sec_header_t *header,
-	uint8_t                   *out,
-	uint16_t                   out_capacity,
-	uint16_t                  *out_len);
+pus_status_t pus_tm_sec_header_encode(const pus_tm_sec_header_t *header,
+                                      uint8_t *out,
+                                      uint16_t out_capacity,
+                                      uint16_t *out_len);
 
 #endif /* PUS_CODEC_H */
