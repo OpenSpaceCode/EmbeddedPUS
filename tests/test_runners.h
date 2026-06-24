@@ -1,9 +1,10 @@
 #ifndef TEST_RUNNERS_H
 #define TEST_RUNNERS_H
 
-typedef struct {
-	int passed;
-	int total;
+typedef struct
+{
+    int passed;
+    int total;
 } pus_test_result_t;
 
 pus_test_result_t test_pus_run_all(void);
