@@ -67,8 +67,10 @@ static pus_status_t register_structure(pus_service_3_ctx_t *s3,
     }
 }
 
-static pus_status_t
-emit_report(pus_context_t *ctx, pus_service_3_ctx_t *s3, uint16_t sid, uint8_t kind)
+static pus_status_t emit_report(pus_context_t *ctx,
+                                pus_service_3_ctx_t *s3,
+                                uint16_t sid,
+                                uint8_t kind)
 {
     pus_status_t st;
     uint8_t payload[MAX_PAYLOAD];

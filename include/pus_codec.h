@@ -16,8 +16,9 @@
  *
  * @return PUS_STATUS_NULL, PUS_STATUS_BAD_LENGTH, PUS_STATUS_BAD_VERSION, or PUS_STATUS_OK.
  */
-pus_status_t
-pus_tc_sec_header_decode(const uint8_t *data, uint16_t len, pus_tc_sec_header_t *header);
+pus_status_t pus_tc_sec_header_decode(const uint8_t *data,
+                                      uint16_t len,
+                                      pus_tc_sec_header_t *header);
 
 /**
  * @brief Encode a TC secondary header into a byte buffer.
@@ -43,8 +44,9 @@ pus_status_t pus_tc_sec_header_encode(const pus_tc_sec_header_t *header,
  *
  * @return PUS_STATUS_NULL, PUS_STATUS_BAD_LENGTH, or PUS_STATUS_OK.
  */
-pus_status_t
-pus_tm_sec_header_decode(const uint8_t *data, uint16_t len, pus_tm_sec_header_t *header);
+pus_status_t pus_tm_sec_header_decode(const uint8_t *data,
+                                      uint16_t len,
+                                      pus_tm_sec_header_t *header);
 
 /**
  * @brief Encode a TM secondary header into a byte buffer.

@@ -37,8 +37,9 @@ static void write_u32_be(uint8_t *p, uint32_t v)
  *   [9]    spare
  */
 
-pus_status_t
-pus_tc_sec_header_decode(const uint8_t *data, uint16_t len, pus_tc_sec_header_t *header)
+pus_status_t pus_tc_sec_header_decode(const uint8_t *data,
+                                      uint16_t len,
+                                      pus_tc_sec_header_t *header)
 {
     if (data == NULL || header == NULL)
     {
@@ -101,8 +102,9 @@ pus_status_t pus_tc_sec_header_encode(const pus_tc_sec_header_t *header,
  *   [11]    spare
  */
 
-pus_status_t
-pus_tm_sec_header_decode(const uint8_t *data, uint16_t len, pus_tm_sec_header_t *header)
+pus_status_t pus_tm_sec_header_decode(const uint8_t *data,
+                                      uint16_t len,
+                                      pus_tm_sec_header_t *header)
 {
     if (data == NULL || header == NULL)
     {

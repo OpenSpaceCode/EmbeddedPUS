@@ -27,8 +27,9 @@ pus_status_t pus_service_17_emit_alive_report(pus_context_t *ctx, uint16_t desti
  *
  * @return PUS_STATUS_NULL or PUS_STATUS_OK.
  */
-pus_status_t
-pus_service_17_emit_connection_report(pus_context_t *ctx, uint16_t apid, uint16_t destination_id);
+pus_status_t pus_service_17_emit_connection_report(pus_context_t *ctx,
+                                                   uint16_t apid,
+                                                   uint16_t destination_id);
 
 /**
  * @brief Register TC[17,1] and TC[17,3] handlers with the PUS context.

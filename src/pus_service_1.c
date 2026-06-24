@@ -89,8 +89,9 @@ pus_status_t pus_service_1_build_failure(pus_context_t *ctx,
     return build_report(ctx, tc, subtype, failure_code, 1u, out, capacity, out_len);
 }
 
-pus_status_t
-pus_service_1_emit_success(pus_context_t *ctx, const pus_tc_packet_t *tc, pus_subtype_t subtype)
+pus_status_t pus_service_1_emit_success(pus_context_t *ctx,
+                                        const pus_tc_packet_t *tc,
+                                        pus_subtype_t subtype)
 {
     uint8_t out[REPORT_BUF_LEN];
     uint16_t out_len;

@@ -12,8 +12,11 @@
 #define make_ctx th_make_ctx
 
 /* Provider that writes 2 bytes: 0xCA, 0xFE */
-static pus_status_t
-simple_provider(uint16_t sid, uint8_t *buf, uint16_t cap, uint16_t *out_len, void *ud)
+static pus_status_t simple_provider(uint16_t sid,
+                                    uint8_t *buf,
+                                    uint16_t cap,
+                                    uint16_t *out_len,
+                                    void *ud)
 {
     (void)sid;
     (void)cap;
@@ -133,8 +136,11 @@ static uint32_t test_time_source(void *ud)
     return 0xABCD1234u;
 }
 
-static pus_status_t
-failing_provider(uint16_t sid, uint8_t *buf, uint16_t cap, uint16_t *out_len, void *ud)
+static pus_status_t failing_provider(uint16_t sid,
+                                     uint8_t *buf,
+                                     uint16_t cap,
+                                     uint16_t *out_len,
+                                     void *ud)
 {
     (void)sid;
     (void)buf;
@@ -144,8 +150,11 @@ failing_provider(uint16_t sid, uint8_t *buf, uint16_t cap, uint16_t *out_len, vo
     return PUS_STATUS_HANDLER_FAILED;
 }
 
-static pus_status_t
-overflow_provider(uint16_t sid, uint8_t *buf, uint16_t cap, uint16_t *out_len, void *ud)
+static pus_status_t overflow_provider(uint16_t sid,
+                                      uint8_t *buf,
+                                      uint16_t cap,
+                                      uint16_t *out_len,
+                                      void *ud)
 {
     (void)sid;
     (void)buf;

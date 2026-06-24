@@ -123,8 +123,11 @@ static pus_status_t setter_batt_alert(uint16_t pid, const uint8_t *buf, uint16_t
  * HK providers — called by pus_service_3_emit_hk() when TM[3,25] is due
  * ----------------------------------------------------------------------- */
 
-static pus_status_t
-hk_power_provider(uint16_t sid, uint8_t *buf, uint16_t cap, uint16_t *out_len, void *ud)
+static pus_status_t hk_power_provider(uint16_t sid,
+                                      uint8_t *buf,
+                                      uint16_t cap,
+                                      uint16_t *out_len,
+                                      void *ud)
 {
     (void)sid;
     (void)cap;
@@ -136,8 +139,11 @@ hk_power_provider(uint16_t sid, uint8_t *buf, uint16_t cap, uint16_t *out_len, v
     return PUS_STATUS_OK;
 }
 
-static pus_status_t
-hk_thermal_provider(uint16_t sid, uint8_t *buf, uint16_t cap, uint16_t *out_len, void *ud)
+static pus_status_t hk_thermal_provider(uint16_t sid,
+                                        uint8_t *buf,
+                                        uint16_t cap,
+                                        uint16_t *out_len,
+                                        void *ud)
 {
     (void)sid;
     (void)cap;

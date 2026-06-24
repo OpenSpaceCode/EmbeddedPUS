@@ -78,8 +78,9 @@ pus_status_t pus_service_1_build_failure(pus_context_t *ctx,
  *
  * @return PUS_STATUS_NULL or PUS_STATUS_OK.
  */
-pus_status_t
-pus_service_1_emit_success(pus_context_t *ctx, const pus_tc_packet_t *tc, pus_subtype_t subtype);
+pus_status_t pus_service_1_emit_success(pus_context_t *ctx,
+                                        const pus_tc_packet_t *tc,
+                                        pus_subtype_t subtype);
 
 /**
  * @brief Build a failure report and forward it to ctx->tm_sink.

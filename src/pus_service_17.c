@@ -39,8 +39,9 @@ pus_status_t pus_service_17_emit_alive_report(pus_context_t *ctx, uint16_t desti
     return build_and_emit(ctx, PUS_SUBTYPE_TEST_ARE_YOU_ALIVE_REPORT, destination_id, NULL, 0u);
 }
 
-pus_status_t
-pus_service_17_emit_connection_report(pus_context_t *ctx, uint16_t apid, uint16_t destination_id)
+pus_status_t pus_service_17_emit_connection_report(pus_context_t *ctx,
+                                                   uint16_t apid,
+                                                   uint16_t destination_id)
 {
     uint8_t payload[APID_LEN];
 
