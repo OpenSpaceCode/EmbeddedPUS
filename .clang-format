@@ -24,9 +24,6 @@ SpacesInSquareBrackets: false
 SpaceBeforeSquareBrackets: false
 
 # Alignment
-AlignConsecutiveAssignments: Consecutive
-AlignConsecutiveDeclarations: Consecutive
-AlignConsecutiveMacros: Consecutive
 AlignTrailingComments:
   Kind: Always
   OverEmptyLines: 0
