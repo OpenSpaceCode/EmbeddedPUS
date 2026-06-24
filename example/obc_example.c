@@ -80,16 +80,16 @@ static pus_status_t tm_sink(void *ud, const uint8_t *data, uint16_t len)
  * Mission constants
  * ----------------------------------------------------------------------- */
 
-#define OBC_SOURCE_ID  0x0001u /* this OBC's APID */
+#define OBC_SOURCE_ID 0x0001u  /* this OBC's APID */
 #define GROUND_DEST_ID 0x0010u /* default ground station APID */
 
 /* HK structure IDs (ST[03]) */
-#define SID_POWER_HK   0x0001u
+#define SID_POWER_HK 0x0001u
 #define SID_THERMAL_HK 0x0002u
 
 /* Event IDs (ST[05]) */
 #define EVID_MODE_NOMINAL 0x0101u
-#define EVID_BATTERY_LOW  0x0201u
+#define EVID_BATTERY_LOW 0x0201u
 
 /* Parameter IDs (ST[20]) */
 #define PID_BATT_ALERT_MV 0x0001u /* battery low-alert threshold [mV] */
@@ -130,9 +130,9 @@ hk_power_provider(uint16_t sid, uint8_t *buf, uint16_t cap, uint16_t *out_len, v
     (void)cap;
     (void)ud;
     uint16_t mv = platform_read_battery_mv();
-    buf[0]      = (uint8_t)(mv >> 8u);
-    buf[1]      = (uint8_t)(mv & 0xFFu);
-    *out_len    = 2u;
+    buf[0] = (uint8_t)(mv >> 8u);
+    buf[1] = (uint8_t)(mv & 0xFFu);
+    *out_len = 2u;
     return PUS_STATUS_OK;
 }
 
@@ -143,9 +143,9 @@ hk_thermal_provider(uint16_t sid, uint8_t *buf, uint16_t cap, uint16_t *out_len,
     (void)cap;
     (void)ud;
     int16_t temp = platform_read_temperature_c10();
-    buf[0]       = (uint8_t)((uint16_t)temp >> 8u);
-    buf[1]       = (uint8_t)((uint16_t)temp & 0xFFu);
-    *out_len     = 2u;
+    buf[0] = (uint8_t)((uint16_t)temp >> 8u);
+    buf[1] = (uint8_t)((uint16_t)temp & 0xFFu);
+    *out_len = 2u;
     return PUS_STATUS_OK;
 }
 
@@ -153,8 +153,8 @@ hk_thermal_provider(uint16_t sid, uint8_t *buf, uint16_t cap, uint16_t *out_len,
  * EmbeddedPUS contexts — statically allocated
  * ----------------------------------------------------------------------- */
 
-static pus_context_t        g_pus;
-static pus_service_3_ctx_t  g_s3;
+static pus_context_t g_pus;
+static pus_service_3_ctx_t g_s3;
 static pus_service_20_ctx_t g_s20;
 
 /* -----------------------------------------------------------------------
@@ -166,10 +166,10 @@ static void pus_app_init(void)
     /* --- Core context --- */
     pus_config_t cfg;
     memset(&cfg, 0, sizeof(cfg));
-    cfg.default_source_id      = OBC_SOURCE_ID;
+    cfg.default_source_id = OBC_SOURCE_ID;
     cfg.default_destination_id = GROUND_DEST_ID;
-    cfg.tm_sink                = tm_sink;
-    cfg.time_source            = platform_uptime_seconds;
+    cfg.tm_sink = tm_sink;
+    cfg.time_source = platform_uptime_seconds;
     pus_init_with_config(&g_pus, &cfg);
 
     /* --- ST[17]: auto-respond to TC[17,1] are-you-alive --- */
@@ -206,10 +206,10 @@ static void pus_app_send_housekeeping(void)
     /* Low-battery check: emit ST[05] alert if below threshold */
     if (platform_read_battery_mv() < g_batt_alert_mv)
     {
-        uint8_t  aux[2];
+        uint8_t aux[2];
         uint16_t mv = platform_read_battery_mv();
-        aux[0]      = (uint8_t)(mv >> 8u);
-        aux[1]      = (uint8_t)(mv & 0xFFu);
+        aux[0] = (uint8_t)(mv >> 8u);
+        aux[1] = (uint8_t)(mv & 0xFFu);
         pus_service_5_emit(&g_pus,
                            PUS_SUBTYPE_EVENT_HIGH_SEVERITY,
                            EVID_BATTERY_LOW,

@@ -20,7 +20,7 @@
 typedef pus_status_t (*pus_param_getter_t)(uint16_t param_id,
                                            uint8_t *buf,
                                            uint16_t capacity,
-                                           void    *user_data);
+                                           void *user_data);
 
 /**
  * @brief Parameter setter callback; writes a new value for a parameter.
@@ -32,20 +32,20 @@ typedef pus_status_t (*pus_param_getter_t)(uint16_t param_id,
  *
  * @return PUS_STATUS_OK on success; any other value is reported as a completion failure.
  */
-typedef pus_status_t (*pus_param_setter_t)(uint16_t       param_id,
+typedef pus_status_t (*pus_param_setter_t)(uint16_t param_id,
                                            const uint8_t *buf,
-                                           uint16_t       len,
-                                           void          *user_data);
+                                           uint16_t len,
+                                           void *user_data);
 
 /** @brief One entry in the ST[20] parameter table. */
 typedef struct
 {
-    uint16_t           param_id;  /**< Parameter ID. */
-    uint16_t           value_len; /**< Fixed wire size of the parameter value in bytes. */
-    pus_param_getter_t getter;    /**< Read callback. */
-    pus_param_setter_t setter;    /**< Write callback; NULL means read-only. */
-    void              *user_data; /**< Forwarded to getter and setter. */
-    uint8_t            is_used;   /**< Non-zero when the slot is occupied. */
+    uint16_t param_id;         /**< Parameter ID. */
+    uint16_t value_len;        /**< Fixed wire size of the parameter value in bytes. */
+    pus_param_getter_t getter; /**< Read callback. */
+    pus_param_setter_t setter; /**< Write callback; NULL means read-only. */
+    void *user_data;           /**< Forwarded to getter and setter. */
+    uint8_t is_used;           /**< Non-zero when the slot is occupied. */
 } pus_param_entry_t;
 
 /** @brief ST[20] service context. Allocate statically. */
@@ -76,11 +76,11 @@ pus_status_t pus_service_20_init(pus_service_20_ctx_t *s20);
  * @return PUS_STATUS_NULL, PUS_STATUS_TABLE_FULL, or PUS_STATUS_OK.
  */
 pus_status_t pus_service_20_register_param(pus_service_20_ctx_t *s20,
-                                           uint16_t              param_id,
-                                           uint16_t              value_len,
-                                           pus_param_getter_t    getter,
-                                           pus_param_setter_t    setter,
-                                           void                 *user_data);
+                                           uint16_t param_id,
+                                           uint16_t value_len,
+                                           pus_param_getter_t getter,
+                                           pus_param_setter_t setter,
+                                           void *user_data);
 
 /**
  * @brief Build and emit TM[20,2] for the given list of parameter IDs.
@@ -93,10 +93,10 @@ pus_status_t pus_service_20_register_param(pus_service_20_ctx_t *s20,
  * @return PUS_STATUS_NULL, PUS_STATUS_NO_HANDLER, getter error, PUS_STATUS_BUFFER_TOO_SMALL,
  *         or PUS_STATUS_OK.
  */
-pus_status_t pus_service_20_emit_report(pus_context_t        *ctx,
+pus_status_t pus_service_20_emit_report(pus_context_t *ctx,
                                         pus_service_20_ctx_t *s20,
-                                        const uint16_t       *param_ids,
-                                        uint8_t               count);
+                                        const uint16_t *param_ids,
+                                        uint8_t count);
 
 /**
  * @brief Register TC[20,1] and TC[20,3] handlers with the PUS context.

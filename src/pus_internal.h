@@ -12,19 +12,19 @@
  * msg_type_counter is copied from ctx->tm_counter but NOT incremented here;
  * callers must increment after all error paths are cleared.
  */
-static inline void pus_tm_hdr_fill(pus_context_t       *ctx,
+static inline void pus_tm_hdr_fill(pus_context_t *ctx,
                                    pus_tm_sec_header_t *hdr,
-                                   pus_service_t        service,
-                                   pus_subtype_t        subtype,
-                                   uint16_t             dest_id)
+                                   pus_service_t service,
+                                   pus_subtype_t subtype,
+                                   uint16_t dest_id)
 {
-    hdr->version          = PUS_VERSION;
-    hdr->time_ref_status  = 0u;
-    hdr->service_type_id  = service;
-    hdr->subtype_id       = subtype;
+    hdr->version = PUS_VERSION;
+    hdr->time_ref_status = 0u;
+    hdr->service_type_id = service;
+    hdr->subtype_id = subtype;
     hdr->msg_type_counter = ctx->tm_counter;
-    hdr->destination_id   = dest_id;
-    hdr->time  = (ctx->time_source != NULL) ? ctx->time_source(ctx->time_source_user_data) : 0u;
+    hdr->destination_id = dest_id;
+    hdr->time = (ctx->time_source != NULL) ? ctx->time_source(ctx->time_source_user_data) : 0u;
     hdr->spare = 0u;
 }
 

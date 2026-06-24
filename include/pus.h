@@ -56,14 +56,14 @@ pus_status_t pus_tc_process(pus_context_t *ctx, const uint8_t *data, uint16_t le
  * @return PUS_STATUS_NULL, PUS_STATUS_BUFFER_TOO_SMALL, or PUS_STATUS_OK.
  */
 pus_status_t pus_tm_build(pus_context_t *ctx,
-                          pus_service_t  service,
-                          pus_subtype_t  subtype,
-                          uint16_t       destination_id,
+                          pus_service_t service,
+                          pus_subtype_t subtype,
+                          uint16_t destination_id,
                           const uint8_t *payload,
-                          uint16_t       payload_len,
-                          uint8_t       *out,
-                          uint16_t       out_capacity,
-                          uint16_t      *out_len);
+                          uint16_t payload_len,
+                          uint8_t *out,
+                          uint16_t out_capacity,
+                          uint16_t *out_len);
 
 /**
  * @brief Set or replace the TM sink. Pass NULL to disable forwarding.

@@ -30,9 +30,9 @@ pus_tc_sec_header_decode(const uint8_t *data, uint16_t len, pus_tc_sec_header_t 
  * @return PUS_STATUS_NULL, PUS_STATUS_BUFFER_TOO_SMALL, or PUS_STATUS_OK.
  */
 pus_status_t pus_tc_sec_header_encode(const pus_tc_sec_header_t *header,
-                                      uint8_t                   *out,
-                                      uint16_t                   out_capacity,
-                                      uint16_t                  *out_len);
+                                      uint8_t *out,
+                                      uint16_t out_capacity,
+                                      uint16_t *out_len);
 
 /**
  * @brief Decode a raw TM secondary header from a byte buffer.
@@ -57,8 +57,8 @@ pus_tm_sec_header_decode(const uint8_t *data, uint16_t len, pus_tm_sec_header_t 
  * @return PUS_STATUS_NULL, PUS_STATUS_BUFFER_TOO_SMALL, or PUS_STATUS_OK.
  */
 pus_status_t pus_tm_sec_header_encode(const pus_tm_sec_header_t *header,
-                                      uint8_t                   *out,
-                                      uint16_t                   out_capacity,
-                                      uint16_t                  *out_len);
+                                      uint8_t *out,
+                                      uint16_t out_capacity,
+                                      uint16_t *out_len);
 
 #endif /* PUS_CODEC_H */

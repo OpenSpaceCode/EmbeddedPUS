@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#define PUS_SERVICE_3_KIND_HK   0u /**< Housekeeping structure kind. */
+#define PUS_SERVICE_3_KIND_HK 0u   /**< Housekeeping structure kind. */
 #define PUS_SERVICE_3_KIND_DIAG 1u /**< Diagnostic structure kind. */
 
 /**
@@ -21,20 +21,20 @@
  *
  * @return PUS_STATUS_OK on success; any other value aborts the emit.
  */
-typedef pus_status_t (*pus_hk_provider_t)(uint16_t  sid,
-                                          uint8_t  *buf,
-                                          uint16_t  capacity,
+typedef pus_status_t (*pus_hk_provider_t)(uint16_t sid,
+                                          uint8_t *buf,
+                                          uint16_t capacity,
                                           uint16_t *out_len,
-                                          void     *user_data);
+                                          void *user_data);
 
 /** @brief One entry in the ST[03] structure table. */
 typedef struct
 {
-    uint16_t          sid;       /**< Structure ID. */
-    uint8_t           kind;      /**< PUS_SERVICE_3_KIND_HK or PUS_SERVICE_3_KIND_DIAG. */
-    pus_hk_provider_t provider;  /**< Data provider callback. */
-    void             *user_data; /**< Forwarded to provider. */
-    uint8_t           is_used;   /**< Non-zero when the slot is occupied. */
+    uint16_t sid;               /**< Structure ID. */
+    uint8_t kind;               /**< PUS_SERVICE_3_KIND_HK or PUS_SERVICE_3_KIND_DIAG. */
+    pus_hk_provider_t provider; /**< Data provider callback. */
+    void *user_data;            /**< Forwarded to provider. */
+    uint8_t is_used;            /**< Non-zero when the slot is occupied. */
 } pus_hk_entry_t;
 
 /** @brief ST[03] service context. Allocate statically. */
@@ -64,9 +64,9 @@ pus_status_t pus_service_3_init(pus_service_3_ctx_t *s3);
  * @return PUS_STATUS_NULL, PUS_STATUS_TABLE_FULL, or PUS_STATUS_OK.
  */
 pus_status_t pus_service_3_register_hk(pus_service_3_ctx_t *s3,
-                                       uint16_t             sid,
-                                       pus_hk_provider_t    provider,
-                                       void                *user_data);
+                                       uint16_t sid,
+                                       pus_hk_provider_t provider,
+                                       void *user_data);
 
 /**
  * @brief Register a diagnostic structure provider.
@@ -80,9 +80,9 @@ pus_status_t pus_service_3_register_hk(pus_service_3_ctx_t *s3,
  * @return PUS_STATUS_NULL, PUS_STATUS_TABLE_FULL, or PUS_STATUS_OK.
  */
 pus_status_t pus_service_3_register_diag(pus_service_3_ctx_t *s3,
-                                         uint16_t             sid,
-                                         pus_hk_provider_t    provider,
-                                         void                *user_data);
+                                         uint16_t sid,
+                                         pus_hk_provider_t provider,
+                                         void *user_data);
 
 /**
  * @brief Build and emit TM[3,25] for a registered HK structure.

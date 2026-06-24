@@ -13,7 +13,7 @@ pus_status_t pus_set_tm_sink(pus_context_t *ctx, pus_tm_sink_t sink, void *user_
     {
         return PUS_STATUS_NULL;
     }
-    ctx->tm_sink           = sink;
+    ctx->tm_sink = sink;
     ctx->tm_sink_user_data = user_data;
     return PUS_STATUS_OK;
 }
@@ -37,7 +37,7 @@ pus_status_t pus_tc_decode(const uint8_t *data, uint16_t len, pus_tc_packet_t *t
         return st;
     }
 
-    tc->payload     = &data[PUS_TC_SEC_HEADER_LEN];
+    tc->payload = &data[PUS_TC_SEC_HEADER_LEN];
     tc->payload_len = (uint16_t)(len - PUS_TC_SEC_HEADER_LEN);
 
     return PUS_STATUS_OK;
@@ -46,9 +46,9 @@ pus_status_t pus_tc_decode(const uint8_t *data, uint16_t len, pus_tc_packet_t *t
 pus_status_t pus_tc_process(pus_context_t *ctx, const uint8_t *data, uint16_t len)
 {
     pus_tc_packet_t tc;
-    pus_status_t    st;
-    int             idx;
-    uint8_t         ack;
+    pus_status_t st;
+    int idx;
+    uint8_t ack;
 
     if (ctx == NULL || data == NULL)
     {
@@ -104,17 +104,17 @@ pus_status_t pus_tc_process(pus_context_t *ctx, const uint8_t *data, uint16_t le
 }
 
 pus_status_t pus_tm_build(pus_context_t *ctx,
-                          pus_service_t  service,
-                          pus_subtype_t  subtype,
-                          uint16_t       destination_id,
+                          pus_service_t service,
+                          pus_subtype_t subtype,
+                          uint16_t destination_id,
                           const uint8_t *payload,
-                          uint16_t       payload_len,
-                          uint8_t       *out,
-                          uint16_t       out_capacity,
-                          uint16_t      *out_len)
+                          uint16_t payload_len,
+                          uint8_t *out,
+                          uint16_t out_capacity,
+                          uint16_t *out_len)
 {
     pus_tm_sec_header_t hdr;
-    uint16_t            hdr_len;
+    uint16_t hdr_len;
 
     if (ctx == NULL || out == NULL || out_len == NULL)
     {

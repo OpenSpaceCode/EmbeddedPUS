@@ -18,9 +18,9 @@ typedef struct pus_context pus_context_t;
  *
  * @return PUS_STATUS_OK on success; any other value triggers a completion failure report.
  */
-typedef pus_status_t (*pus_tc_handler_t)(pus_context_t         *ctx,
+typedef pus_status_t (*pus_tc_handler_t)(pus_context_t *ctx,
                                          const pus_tc_packet_t *tc,
-                                         void                  *user_data);
+                                         void *user_data);
 
 /**
  * @brief TM sink callback that receives every encoded TM packet from pus_tm_build().
@@ -45,11 +45,11 @@ typedef uint32_t (*pus_time_source_t)(void *user_data);
 /** @brief One entry in the TC handler dispatch table. */
 typedef struct
 {
-    pus_service_t    service;   /**< Service type identifier. */
-    pus_subtype_t    subtype;   /**< Service subtype identifier. */
-    pus_tc_handler_t handler;   /**< Handler function pointer. */
-    void            *user_data; /**< Opaque pointer forwarded to the handler. */
-    uint8_t          is_used;   /**< Non-zero when the slot is occupied. */
+    pus_service_t service;    /**< Service type identifier. */
+    pus_subtype_t subtype;    /**< Service subtype identifier. */
+    pus_tc_handler_t handler; /**< Handler function pointer. */
+    void *user_data;          /**< Opaque pointer forwarded to the handler. */
+    uint8_t is_used;          /**< Non-zero when the slot is occupied. */
 } pus_handler_entry_t;
 
 /**
@@ -58,12 +58,12 @@ typedef struct
  */
 typedef struct
 {
-    uint16_t          default_source_id;      /**< APID of this node. */
-    uint16_t          default_destination_id; /**< Default ground station APID. */
-    pus_tm_sink_t     tm_sink;                /**< TM output callback (may be NULL). */
-    void             *tm_sink_user_data;      /**< Forwarded to tm_sink. */
-    pus_time_source_t time_source;            /**< Timestamp callback (may be NULL). */
-    void             *time_source_user_data;  /**< Forwarded to time_source. */
+    uint16_t default_source_id;      /**< APID of this node. */
+    uint16_t default_destination_id; /**< Default ground station APID. */
+    pus_tm_sink_t tm_sink;           /**< TM output callback (may be NULL). */
+    void *tm_sink_user_data;         /**< Forwarded to tm_sink. */
+    pus_time_source_t time_source;   /**< Timestamp callback (may be NULL). */
+    void *time_source_user_data;     /**< Forwarded to time_source. */
 } pus_config_t;
 
 /**
@@ -76,13 +76,13 @@ typedef struct
 struct pus_context
 {
     pus_handler_entry_t handler_table[PUS_MAX_TC_HANDLERS]; /**< TC dispatch table. */
-    uint16_t            tm_counter;                         /**< Outgoing TM message counter. */
-    uint16_t            default_source_id;                  /**< APID of this node. */
-    uint16_t            default_destination_id;             /**< Default destination APID. */
-    pus_tm_sink_t       tm_sink;                            /**< TM output callback. */
-    void               *tm_sink_user_data;                  /**< Forwarded to tm_sink. */
-    pus_time_source_t   time_source;                        /**< Timestamp callback. */
-    void               *time_source_user_data;              /**< Forwarded to time_source. */
+    uint16_t tm_counter;                                    /**< Outgoing TM message counter. */
+    uint16_t default_source_id;                             /**< APID of this node. */
+    uint16_t default_destination_id;                        /**< Default destination APID. */
+    pus_tm_sink_t tm_sink;                                  /**< TM output callback. */
+    void *tm_sink_user_data;                                /**< Forwarded to tm_sink. */
+    pus_time_source_t time_source;                          /**< Timestamp callback. */
+    void *time_source_user_data;                            /**< Forwarded to time_source. */
 };
 
 /**

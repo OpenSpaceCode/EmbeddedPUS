@@ -14,22 +14,22 @@
  */
 #define SUCCESS_PAYLOAD_LEN 4u
 #define FAILURE_PAYLOAD_LEN 6u
-#define REPORT_BUF_LEN      (PUS_TM_SEC_HEADER_LEN + FAILURE_PAYLOAD_LEN)
+#define REPORT_BUF_LEN (PUS_TM_SEC_HEADER_LEN + FAILURE_PAYLOAD_LEN)
 
-static pus_status_t build_report(pus_context_t         *ctx,
+static pus_status_t build_report(pus_context_t *ctx,
                                  const pus_tc_packet_t *tc,
-                                 pus_subtype_t          subtype,
-                                 uint16_t               failure_code,
-                                 uint8_t                include_failure_code,
-                                 uint8_t               *out,
-                                 uint16_t               capacity,
-                                 uint16_t              *out_len)
+                                 pus_subtype_t subtype,
+                                 uint16_t failure_code,
+                                 uint8_t include_failure_code,
+                                 uint8_t *out,
+                                 uint16_t capacity,
+                                 uint16_t *out_len)
 {
     pus_tm_sec_header_t hdr;
-    uint16_t            hdr_len;
-    uint16_t            payload_len;
-    uint8_t             payload[FAILURE_PAYLOAD_LEN];
-    uint16_t            source_id;
+    uint16_t hdr_len;
+    uint16_t payload_len;
+    uint8_t payload[FAILURE_PAYLOAD_LEN];
+    uint16_t source_id;
 
     if (ctx == NULL || tc == NULL || out == NULL || out_len == NULL)
     {
@@ -46,7 +46,7 @@ static pus_status_t build_report(pus_context_t         *ctx,
     pus_tm_hdr_fill(ctx, &hdr, PUS_SERVICE_REQUEST_VERIFICATION, subtype, tc->sec_header.source_id);
     (void)pus_tm_sec_header_encode(&hdr, out, capacity, &hdr_len);
 
-    source_id  = tc->sec_header.source_id;
+    source_id = tc->sec_header.source_id;
     payload[0] = tc->sec_header.service_type_id;
     payload[1] = tc->sec_header.subtype_id;
     payload[2] = (uint8_t)(source_id >> 8u);
@@ -68,23 +68,23 @@ static pus_status_t build_report(pus_context_t         *ctx,
     return PUS_STATUS_OK;
 }
 
-pus_status_t pus_service_1_build_success(pus_context_t         *ctx,
+pus_status_t pus_service_1_build_success(pus_context_t *ctx,
                                          const pus_tc_packet_t *tc,
-                                         pus_subtype_t          subtype,
-                                         uint8_t               *out,
-                                         uint16_t               capacity,
-                                         uint16_t              *out_len)
+                                         pus_subtype_t subtype,
+                                         uint8_t *out,
+                                         uint16_t capacity,
+                                         uint16_t *out_len)
 {
     return build_report(ctx, tc, subtype, 0u, 0u, out, capacity, out_len);
 }
 
-pus_status_t pus_service_1_build_failure(pus_context_t         *ctx,
+pus_status_t pus_service_1_build_failure(pus_context_t *ctx,
                                          const pus_tc_packet_t *tc,
-                                         pus_subtype_t          subtype,
-                                         uint16_t               failure_code,
-                                         uint8_t               *out,
-                                         uint16_t               capacity,
-                                         uint16_t              *out_len)
+                                         pus_subtype_t subtype,
+                                         uint16_t failure_code,
+                                         uint8_t *out,
+                                         uint16_t capacity,
+                                         uint16_t *out_len)
 {
     return build_report(ctx, tc, subtype, failure_code, 1u, out, capacity, out_len);
 }
@@ -92,8 +92,8 @@ pus_status_t pus_service_1_build_failure(pus_context_t         *ctx,
 pus_status_t
 pus_service_1_emit_success(pus_context_t *ctx, const pus_tc_packet_t *tc, pus_subtype_t subtype)
 {
-    uint8_t      out[REPORT_BUF_LEN];
-    uint16_t     out_len;
+    uint8_t out[REPORT_BUF_LEN];
+    uint16_t out_len;
     pus_status_t st;
 
     if (ctx == NULL || tc == NULL)
@@ -112,13 +112,13 @@ pus_service_1_emit_success(pus_context_t *ctx, const pus_tc_packet_t *tc, pus_su
     return PUS_STATUS_OK;
 }
 
-pus_status_t pus_service_1_emit_failure(pus_context_t         *ctx,
+pus_status_t pus_service_1_emit_failure(pus_context_t *ctx,
                                         const pus_tc_packet_t *tc,
-                                        pus_subtype_t          subtype,
-                                        uint16_t               failure_code)
+                                        pus_subtype_t subtype,
+                                        uint16_t failure_code)
 {
-    uint8_t      out[REPORT_BUF_LEN];
-    uint16_t     out_len;
+    uint8_t out[REPORT_BUF_LEN];
+    uint16_t out_len;
     pus_status_t st;
 
     if (ctx == NULL || tc == NULL)

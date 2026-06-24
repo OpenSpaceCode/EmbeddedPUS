@@ -33,11 +33,11 @@ pus_status_t pus_service_20_init(pus_service_20_ctx_t *s20)
 }
 
 pus_status_t pus_service_20_register_param(pus_service_20_ctx_t *s20,
-                                           uint16_t              param_id,
-                                           uint16_t              value_len,
-                                           pus_param_getter_t    getter,
-                                           pus_param_setter_t    setter,
-                                           void                 *user_data)
+                                           uint16_t param_id,
+                                           uint16_t value_len,
+                                           pus_param_getter_t getter,
+                                           pus_param_setter_t setter,
+                                           void *user_data)
 {
     if (s20 == NULL || getter == NULL)
     {
@@ -53,8 +53,8 @@ pus_status_t pus_service_20_register_param(pus_service_20_ctx_t *s20,
                 if (s20->params[i].param_id == param_id)
                 {
                     s20->params[i].value_len = value_len;
-                    s20->params[i].getter    = getter;
-                    s20->params[i].setter    = setter;
+                    s20->params[i].getter = getter;
+                    s20->params[i].setter = setter;
                     s20->params[i].user_data = user_data;
                     return PUS_STATUS_OK;
                 }
@@ -68,26 +68,26 @@ pus_status_t pus_service_20_register_param(pus_service_20_ctx_t *s20,
         {
             return PUS_STATUS_TABLE_FULL;
         }
-        s20->params[first_free].param_id  = param_id;
+        s20->params[first_free].param_id = param_id;
         s20->params[first_free].value_len = value_len;
-        s20->params[first_free].getter    = getter;
-        s20->params[first_free].setter    = setter;
+        s20->params[first_free].getter = getter;
+        s20->params[first_free].setter = setter;
         s20->params[first_free].user_data = user_data;
-        s20->params[first_free].is_used   = 1u;
+        s20->params[first_free].is_used = 1u;
         return PUS_STATUS_OK;
     }
 }
 
-pus_status_t pus_service_20_emit_report(pus_context_t        *ctx,
+pus_status_t pus_service_20_emit_report(pus_context_t *ctx,
                                         pus_service_20_ctx_t *s20,
-                                        const uint16_t       *param_ids,
-                                        uint8_t               count)
+                                        const uint16_t *param_ids,
+                                        uint8_t count)
 {
     pus_status_t st;
-    uint8_t      payload[PUS_MAX_TM_PAYLOAD_LEN];
-    uint8_t      out[MAX_OUT_LEN];
-    uint16_t     out_len;
-    uint16_t     off = 0u;
+    uint8_t payload[PUS_MAX_TM_PAYLOAD_LEN];
+    uint8_t out[MAX_OUT_LEN];
+    uint16_t out_len;
+    uint16_t off = 0u;
 
     if (ctx == NULL || s20 == NULL || param_ids == NULL)
     {
@@ -105,7 +105,7 @@ pus_status_t pus_service_20_emit_report(pus_context_t        *ctx,
             return PUS_STATUS_NO_HANDLER;
         }
 
-        uint16_t pid       = param_ids[i];
+        uint16_t pid = param_ids[i];
         uint16_t value_len = s20->params[idx].value_len;
 
         if ((uint16_t)(off + 2u + value_len) > (uint16_t)sizeof(payload))
@@ -113,7 +113,7 @@ pus_status_t pus_service_20_emit_report(pus_context_t        *ctx,
             return PUS_STATUS_BUFFER_TOO_SMALL;
         }
 
-        payload[off]      = (uint8_t)(pid >> 8u);
+        payload[off] = (uint8_t)(pid >> 8u);
         payload[off + 1u] = (uint8_t)(pid & 0xFFu);
         off += 2u;
 
@@ -139,8 +139,8 @@ pus_status_t pus_service_20_emit_report(pus_context_t        *ctx,
 static pus_status_t handle_tc_20_1(pus_context_t *ctx, const pus_tc_packet_t *tc, void *user_data)
 {
     pus_service_20_ctx_t *s20 = (pus_service_20_ctx_t *)user_data;
-    uint8_t               n;
-    uint16_t              param_ids[PUS_SERVICE_20_MAX_PARAMS];
+    uint8_t n;
+    uint16_t param_ids[PUS_SERVICE_20_MAX_PARAMS];
 
     if (tc->payload_len < 1u)
     {
@@ -169,8 +169,8 @@ static pus_status_t handle_tc_20_1(pus_context_t *ctx, const pus_tc_packet_t *tc
 static pus_status_t handle_tc_20_3(pus_context_t *ctx, const pus_tc_packet_t *tc, void *user_data)
 {
     pus_service_20_ctx_t *s20 = (pus_service_20_ctx_t *)user_data;
-    uint8_t               n;
-    uint16_t              off;
+    uint8_t n;
+    uint16_t off;
 
     (void)ctx;
 
@@ -178,7 +178,7 @@ static pus_status_t handle_tc_20_3(pus_context_t *ctx, const pus_tc_packet_t *tc
     {
         return PUS_STATUS_BAD_LENGTH;
     }
-    n   = tc->payload[0];
+    n = tc->payload[0];
     off = 1u;
 
     for (uint8_t i = 0u; i < n; i++)

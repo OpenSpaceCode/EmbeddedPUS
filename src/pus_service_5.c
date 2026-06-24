@@ -6,18 +6,18 @@
 #include <stddef.h>
 
 /* TM[5,x] payload: event_id(2) + aux_data (up to PUS_MAX_TM_PAYLOAD_LEN) */
-#define EVID_LEN    2u
+#define EVID_LEN 2u
 #define MAX_PAYLOAD (EVID_LEN + PUS_MAX_TM_PAYLOAD_LEN)
 #define MAX_OUT_LEN (PUS_TM_SEC_HEADER_LEN + MAX_PAYLOAD)
 
 pus_status_t pus_service_5_emit(pus_context_t *ctx,
-                                pus_subtype_t  subtype,
-                                uint16_t       event_id,
+                                pus_subtype_t subtype,
+                                uint16_t event_id,
                                 const uint8_t *aux_data,
-                                uint16_t       aux_len)
+                                uint16_t aux_len)
 {
-    uint8_t  payload[MAX_PAYLOAD];
-    uint8_t  out[MAX_OUT_LEN];
+    uint8_t payload[MAX_PAYLOAD];
+    uint8_t out[MAX_OUT_LEN];
     uint16_t out_len;
 
     if (ctx == NULL)

@@ -4,11 +4,11 @@
 
 #include <stddef.h>
 
-pus_status_t pus_handler_register(pus_context_t   *ctx,
-                                  pus_service_t    service,
-                                  pus_subtype_t    subtype,
+pus_status_t pus_handler_register(pus_context_t *ctx,
+                                  pus_service_t service,
+                                  pus_subtype_t subtype,
                                   pus_tc_handler_t handler,
-                                  void            *user_data)
+                                  void *user_data)
 {
     if (ctx == NULL)
     {
@@ -39,7 +39,7 @@ pus_status_t pus_handler_register(pus_context_t   *ctx,
                 if (ctx->handler_table[i].service == service &&
                     ctx->handler_table[i].subtype == subtype)
                 {
-                    ctx->handler_table[i].handler   = handler;
+                    ctx->handler_table[i].handler = handler;
                     ctx->handler_table[i].user_data = user_data;
                     return PUS_STATUS_OK;
                 }
@@ -53,11 +53,11 @@ pus_status_t pus_handler_register(pus_context_t   *ctx,
         {
             return PUS_STATUS_TABLE_FULL;
         }
-        ctx->handler_table[first_free].service   = service;
-        ctx->handler_table[first_free].subtype   = subtype;
-        ctx->handler_table[first_free].handler   = handler;
+        ctx->handler_table[first_free].service = service;
+        ctx->handler_table[first_free].subtype = subtype;
+        ctx->handler_table[first_free].handler = handler;
         ctx->handler_table[first_free].user_data = user_data;
-        ctx->handler_table[first_free].is_used   = 1u;
+        ctx->handler_table[first_free].is_used = 1u;
         return PUS_STATUS_OK;
     }
 }
@@ -81,9 +81,9 @@ int pus_handler_find(const pus_context_t *ctx, pus_service_t service, pus_subtyp
     return -1;
 }
 
-pus_status_t pus_handler_invoke(pus_context_t         *ctx,
-                                pus_service_t          service,
-                                pus_subtype_t          subtype,
+pus_status_t pus_handler_invoke(pus_context_t *ctx,
+                                pus_service_t service,
+                                pus_subtype_t subtype,
                                 const pus_tc_packet_t *tc)
 {
     if (ctx == NULL || tc == NULL)

@@ -9,7 +9,7 @@
 /** @defgroup ack_flags TC secondary header ACK flag bits */
 /** @{ */
 #define PUS_ACK_ACCEPTANCE 0x08u /**< Request acceptance verification report. */
-#define PUS_ACK_START      0x04u /**< Request start of execution verification report. */
+#define PUS_ACK_START 0x04u      /**< Request start of execution verification report. */
 /**
  * @brief Request progress verification report.
  * @note  pus_tc_process() does NOT emit progress reports automatically.
@@ -23,7 +23,7 @@
  *        }
  *        @endcode
  */
-#define PUS_ACK_PROGRESS   0x02u
+#define PUS_ACK_PROGRESS 0x02u
 #define PUS_ACK_COMPLETION 0x01u /**< Request completion verification report. */
 /** @} */
 
@@ -40,12 +40,12 @@
  *
  * @return PUS_STATUS_NULL, PUS_STATUS_BUFFER_TOO_SMALL, or PUS_STATUS_OK.
  */
-pus_status_t pus_service_1_build_success(pus_context_t         *ctx,
+pus_status_t pus_service_1_build_success(pus_context_t *ctx,
                                          const pus_tc_packet_t *tc,
-                                         pus_subtype_t          subtype,
-                                         uint8_t               *out,
-                                         uint16_t               capacity,
-                                         uint16_t              *out_len);
+                                         pus_subtype_t subtype,
+                                         uint8_t *out,
+                                         uint16_t capacity,
+                                         uint16_t *out_len);
 
 /**
  * @brief Build a ST[01] failure report into a caller-provided buffer.
@@ -60,13 +60,13 @@ pus_status_t pus_service_1_build_success(pus_context_t         *ctx,
  *
  * @return PUS_STATUS_NULL, PUS_STATUS_BUFFER_TOO_SMALL, or PUS_STATUS_OK.
  */
-pus_status_t pus_service_1_build_failure(pus_context_t         *ctx,
+pus_status_t pus_service_1_build_failure(pus_context_t *ctx,
                                          const pus_tc_packet_t *tc,
-                                         pus_subtype_t          subtype,
-                                         uint16_t               failure_code,
-                                         uint8_t               *out,
-                                         uint16_t               capacity,
-                                         uint16_t              *out_len);
+                                         pus_subtype_t subtype,
+                                         uint16_t failure_code,
+                                         uint8_t *out,
+                                         uint16_t capacity,
+                                         uint16_t *out_len);
 
 /**
  * @brief Build a success report and forward it to ctx->tm_sink.
@@ -92,9 +92,9 @@ pus_service_1_emit_success(pus_context_t *ctx, const pus_tc_packet_t *tc, pus_su
  *
  * @return PUS_STATUS_NULL or PUS_STATUS_OK.
  */
-pus_status_t pus_service_1_emit_failure(pus_context_t         *ctx,
+pus_status_t pus_service_1_emit_failure(pus_context_t *ctx,
                                         const pus_tc_packet_t *tc,
-                                        pus_subtype_t          subtype,
-                                        uint16_t               failure_code);
+                                        pus_subtype_t subtype,
+                                        uint16_t failure_code);
 
 #endif /* PUS_SERVICE_1_H */

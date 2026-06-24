@@ -49,13 +49,13 @@ pus_tc_sec_header_decode(const uint8_t *data, uint16_t len, pus_tc_sec_header_t 
         return PUS_STATUS_BAD_LENGTH;
     }
 
-    header->version         = (uint8_t)((data[0] >> 4u) & 0x0Fu);
-    header->ack_flags       = (uint8_t)(data[0] & 0x0Fu);
+    header->version = (uint8_t)((data[0] >> 4u) & 0x0Fu);
+    header->ack_flags = (uint8_t)(data[0] & 0x0Fu);
     header->service_type_id = data[1];
-    header->subtype_id      = data[2];
-    header->source_id       = read_u16_be(&data[3]);
-    header->time            = read_u32_be(&data[5]);
-    header->spare           = data[9];
+    header->subtype_id = data[2];
+    header->source_id = read_u16_be(&data[3]);
+    header->time = read_u32_be(&data[5]);
+    header->spare = data[9];
 
     if (header->version != PUS_VERSION)
     {
@@ -66,9 +66,9 @@ pus_tc_sec_header_decode(const uint8_t *data, uint16_t len, pus_tc_sec_header_t 
 }
 
 pus_status_t pus_tc_sec_header_encode(const pus_tc_sec_header_t *header,
-                                      uint8_t                   *out,
-                                      uint16_t                   capacity,
-                                      uint16_t                  *out_len)
+                                      uint8_t *out,
+                                      uint16_t capacity,
+                                      uint16_t *out_len)
 {
     if (header == NULL || out == NULL || out_len == NULL)
     {
@@ -113,22 +113,22 @@ pus_tm_sec_header_decode(const uint8_t *data, uint16_t len, pus_tm_sec_header_t 
         return PUS_STATUS_BAD_LENGTH;
     }
 
-    header->version          = (uint8_t)((data[0] >> 4u) & 0x0Fu);
-    header->time_ref_status  = (uint8_t)(data[0] & 0x0Fu);
-    header->service_type_id  = data[1];
-    header->subtype_id       = data[2];
+    header->version = (uint8_t)((data[0] >> 4u) & 0x0Fu);
+    header->time_ref_status = (uint8_t)(data[0] & 0x0Fu);
+    header->service_type_id = data[1];
+    header->subtype_id = data[2];
     header->msg_type_counter = read_u16_be(&data[3]);
-    header->destination_id   = read_u16_be(&data[5]);
-    header->time             = read_u32_be(&data[7]);
-    header->spare            = data[11];
+    header->destination_id = read_u16_be(&data[5]);
+    header->time = read_u32_be(&data[7]);
+    header->spare = data[11];
 
     return PUS_STATUS_OK;
 }
 
 pus_status_t pus_tm_sec_header_encode(const pus_tm_sec_header_t *header,
-                                      uint8_t                   *out,
-                                      uint16_t                   capacity,
-                                      uint16_t                  *out_len)
+                                      uint8_t *out,
+                                      uint16_t capacity,
+                                      uint16_t *out_len)
 {
     if (header == NULL || out == NULL || out_len == NULL)
     {

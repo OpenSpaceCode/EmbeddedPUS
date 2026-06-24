@@ -7,16 +7,16 @@
 #include <stddef.h>
 
 /* TM[17,2]: no payload; TM[17,4]: apid (2 bytes) */
-#define APID_LEN    2u
+#define APID_LEN 2u
 #define MAX_OUT_LEN (PUS_TM_SEC_HEADER_LEN + APID_LEN)
 
 static pus_status_t build_and_emit(pus_context_t *ctx,
-                                   pus_subtype_t  subtype,
-                                   uint16_t       destination_id,
+                                   pus_subtype_t subtype,
+                                   uint16_t destination_id,
                                    const uint8_t *payload,
-                                   uint16_t       payload_len)
+                                   uint16_t payload_len)
 {
-    uint8_t  out[MAX_OUT_LEN];
+    uint8_t out[MAX_OUT_LEN];
     uint16_t out_len;
 
     return pus_tm_build(ctx,
