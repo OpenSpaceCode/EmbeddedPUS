@@ -44,6 +44,7 @@ BinPackArguments: false
 BinPackParameters: false
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
+PenaltyReturnTypeOnItsOwnLine: 10000
 
 # Includes
 SortIncludes: CaseInsensitive
